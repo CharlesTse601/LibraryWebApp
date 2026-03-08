@@ -1,0 +1,26 @@
+{% extends 'library/base.html' %}
+
+{% block title %}Browse — LibraryWebApp{% endblock %}
+
+{% block content %}
+<h1>Browse</h1>
+
+<section>
+    <h2>Find any Book... In one place.</h2>
+    <form method="GET" action="{% url 'library:search' %}">
+        <input type="text" name="q" placeholder="Search by title, author, or ISBN...">
+        <button type="submit">Search</button>
+    </form>
+</section>
+
+<section>
+    <h2>This week's hottest Categories!</h2>
+    <p>Top category tiles will be displayed here.</p>
+    <a href="{% url 'library:categories' %}">Want to see all we have? Click here</a>
+</section>
+
+<section>
+    <h2>Check out what's Hot!</h2>
+    <p>Top-ranked book cards (cover, title, View and Add to My List buttons) will appear here.</p>
+</section>
+{% endblock %}

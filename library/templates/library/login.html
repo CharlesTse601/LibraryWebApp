@@ -1,0 +1,74 @@
+{% extends 'library/base.html' %}
+
+{% block title %}{% if active_tab == 'register' %}Register{% else %}Login{% endif %} — LibraryWebApp{% endblock %}
+
+{% block content %}
+<div>
+    <div>
+        <h2>Find any Book... In one place.</h2>
+        <ul>
+            <li>"Positive review" — Name Lastname</li>
+            <li>"Positive review" — John the Unknown</li>
+            <li>"Positive review" — Jane Doe</li>
+        </ul>
+    </div>
+
+    <div>
+        <nav>
+            <a href="{% url 'library:login' %}?tab=login">LOGIN</a>
+            <a href="{% url 'library:login' %}?tab=register">REGISTER</a>
+        </nav>
+
+        {% if active_tab == 'register' %}
+        <h1>Create an Account</h1>
+        <form method="POST" action="{% url 'library:login' %}?tab=register">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="register">
+
+            <label for="reg_username">Username</label>
+            <input type="text" id="reg_username" name="username" placeholder="Choose a username">
+
+            <label for="reg_email">Email Address</label>
+            <input type="email" id="reg_email" name="email" placeholder="your@email.com">
+
+            <label for="reg_password1">Password</label>
+            <input type="password" id="reg_password1" name="password1" placeholder="*******">
+
+            <label for="reg_password2">Confirm Password</label>
+            <input type="password" id="reg_password2" name="password2" placeholder="*******">
+
+            <label>Role</label>
+            <div>
+                <button type="button" name="role" value="student">Student</button>
+                <button type="button" name="role" value="admin">Admin</button>
+            </div>
+
+            <button type="submit">Create Account</button>
+        </form>
+        <p>Already have an account? <a href="{% url 'library:login' %}?tab=login">Log in here</a></p>
+
+        {% else %}
+        <form method="POST" action="{% url 'library:login' %}">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="login">
+
+            <label for="username">Username / Email Address</label>
+            <input type="text" id="username" name="username" placeholder="JohnSmith@gmail.com">
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="*******">
+
+            <label>Role</label>
+            <div>
+                <button type="button" name="role" value="student">Student</button>
+                <button type="button" name="role" value="admin">Admin</button>
+            </div>
+
+            <button type="submit">Login</button>
+        </form>
+        <a href="#">Forgot your password? Reset it here</a>
+        <p>No account yet? <a href="{% url 'library:login' %}?tab=register">Register here</a></p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

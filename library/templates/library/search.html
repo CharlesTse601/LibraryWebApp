@@ -1,0 +1,50 @@
+{% extends 'library/base.html' %}
+
+{% block title %}Search Results — LibraryWebApp{% endblock %}
+
+{% block content %}
+<h1>Search Results</h1>
+
+<form method="GET" action="{% url 'library:search' %}">
+    <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Search by title, author, or ISBN...">
+    <button type="submit">Search</button>
+</form>
+<p>Results will be shown here.</p>
+
+<div>
+    <aside>
+        <h3>Filters</h3>
+
+        <h4>Date Published</h4>
+        <ul>
+            <li>2020–</li>
+            <li>2010–2019</li>
+            <li>Before 2010</li>
+        </ul>
+
+        <h4>Source</h4>
+        <ul>
+            <li>All Sources</li>
+            <li>Google Books</li>
+            <li>Open Library</li>
+        </ul>
+
+        <h4>Category</h4>
+        <p>Category filter checkboxes will appear here.</p>
+    </aside>
+
+    <section>
+        <p>Showing results for "{{ request.GET.q }}"</p>
+        <p>Paginated book result cards (cover, title, author, category, date, star rating,
+           + ADD and READ ONLINE buttons) will appear here.</p>
+
+        <nav>
+            <span>PREV</span>
+            <span>1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>NEXT</span>
+        </nav>
+    </section>
+</div>
+{% endblock %}

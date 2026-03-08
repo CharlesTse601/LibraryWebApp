@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LibraryWebApp{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<nav>
+    <a href="{% url 'library:browse' %}">Library Name</a>
+    <a href="{% url 'library:browse' %}">Browse</a>
+    <a href="{% url 'library:categories' %}">Categories</a>
+    <a href="{% url 'library:search' %}">Search</a>
+    <a href="{% url 'library:about_us' %}">About Us</a>
+    {% if user.is_authenticated %}
+        <a href="{% url 'library:profile' %}">{{ user.username }}</a>
+        <a href="{% url 'library:my_books' %}">My Lists</a>
+        <a href="{% url 'library:logout' %}">Logout</a>
+    {% else %}
+        <a href="{% url 'library:login' %}">Login</a>
+        <a href="{% url 'library:login' %}?tab=register">Register</a>
+    {% endif %}
+</nav>
+
+{% if messages %}
+    <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<footer>
+    <a href="{% url 'library:browse' %}">Browse</a>
+    <a href="{% url 'library:categories' %}">Categories</a>
+    <a href="{% url 'library:search' %}">Search</a>
+    <a href="{% url 'library:about_us' %}">About Us</a>
+    <a href="{% url 'library:faq' %}">FAQ</a>
+    <a href="{% url 'library:contacts' %}">Contact Us</a>
+    <a href="{% url 'library:privacy_policy' %}">Privacy Policy</a>
+    <a href="{% url 'library:terms_of_service' %}">Terms of Service</a>
+    <p>&copy; 2024 LibraryWebApp. All rights reserved.</p>
+</footer>
+
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

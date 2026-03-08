@@ -1,0 +1,54 @@
+{% extends 'library/base.html' %}
+
+{% block title %}My Account — LibraryWebApp{% endblock %}
+
+{% block content %}
+<section>
+    <p>[Avatar]</p>
+    <h1>{{ user.username }}</h1>
+    <p>Student &mdash; {{ user.email }}</p>
+    <a href="#">EDIT PROFILE</a>
+</section>
+
+<section>
+    <dl>
+        <dt>Books Read</dt> <dd>0</dd>
+        <dt>Wishlist</dt>   <dd>0</dd>
+        <dt>Lists</dt>      <dd>0</dd>
+        <dt>Reviews</dt>    <dd>0</dd>
+        <dt>Upvotes</dt>    <dd>0</dd>
+    </dl>
+</section>
+
+<div>
+    <nav>
+        <h2>My Lists</h2>
+        <a href="{% url 'library:my_books' %}">Read History</a>
+        <a href="{% url 'library:my_books' %}">Wishlist</a>
+        <a href="#">+ Add New List</a>
+    </nav>
+
+    <section>
+        <h2>Read History</h2>
+
+        <form method="GET">
+            <input type="text" name="q" placeholder="Search list...">
+        </form>
+        <select name="sort">
+            <option value="date">Date Read</option>
+            <option value="title">Title</option>
+            <option value="rating">Rating</option>
+        </select>
+
+        <p>Book rows (thumbnail, title, author, date read, star rating, VIEW and REMOVE buttons)
+           will be rendered here from the database.</p>
+
+        <nav>
+            <span>PREV</span>
+            <span>1</span>
+            <span>2</span>
+            <span>NEXT</span>
+        </nav>
+    </section>
+</div>
+{% endblock %}
