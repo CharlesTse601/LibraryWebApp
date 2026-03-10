@@ -1,0 +1,47 @@
+{% extends 'library/base.html' %}
+
+{% block title %}My Books — LibraryWebApp{% endblock %}
+
+{% block content %}
+<p>
+    <a href="{% url 'library:profile' %}">My Account</a> &rsaquo;
+    <strong>My Books</strong>
+</p>
+
+<h1>My Books</h1>
+
+<div>
+    <nav>
+        <h2>My Lists</h2>
+        <a href="#">Read History</a>
+        <a href="#">Wishlist</a>
+        <a href="#">+ Add New List</a>
+    </nav>
+
+    <section>
+        <nav>
+            <a href="?view=history">Read History</a>
+            <a href="?view=wishlist">Wishlist</a>
+        </nav>
+
+        <form method="GET">
+            <input type="text" name="q" placeholder="Search list...">
+        </form>
+        <select name="sort">
+            <option value="date">Date Added</option>
+            <option value="title">Title</option>
+            <option value="rating">Rating</option>
+        </select>
+
+        <p>Book rows (thumbnail, title, author, date, star rating, VIEW and REMOVE buttons)
+           will be rendered here from the database.</p>
+
+        <nav>
+            <span>PREV</span>
+            <span>1</span>
+            <span>2</span>
+            <span>NEXT</span>
+        </nav>
+    </section>
+</div>
+{% endblock %}

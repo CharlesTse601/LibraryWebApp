@@ -1,0 +1,44 @@
+{% extends 'library/base.html' %}
+
+{% block title %}About Us — LibraryWebApp{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'library:browse' %}">Browse</a> &rsaquo; <strong>About Us</strong></p>
+
+<h1>About Us</h1>
+
+<p>Tagline: Find any book, in one place.</p>
+
+<section>
+    <p>10,000+ Books</p>
+    <p>1,000+ Active Users</p>
+    <p>20+ Categories</p>
+    <p>1 Purpose</p>
+</section>
+
+<section>
+    <h2>What We Do</h2>
+    <div>
+        <h3>Find Any Book</h3>
+        <p>Description will go here.</p>
+    </div>
+    <div>
+        <h3>Read Online</h3>
+        <p>Description will go here.</p>
+    </div>
+    <div>
+        <h3>Track and Rate</h3>
+        <p>Description will go here.</p>
+    </div>
+</section>
+
+<section>
+    <h2>Meet the Devs</h2>
+    <div>
+        <p>[Avatar] Charles Tse — Developer</p>
+        <p>[Avatar] Andrei Gog — Developer</p>
+        <p>[Avatar] Karim Oudeh — Developer</p>
+        <p>[Avatar] Lucas McPike — Developer</p>
+    </div>
+</section>
+{% endblock %}

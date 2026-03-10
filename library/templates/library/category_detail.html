@@ -1,0 +1,27 @@
+{% extends 'library/base.html' %}
+
+{% block title %}Category — LibraryWebApp{% endblock %}
+
+{% block content %}
+<p>
+    <a href="{% url 'library:browse' %}">Browse</a> &rsaquo;
+    <a href="{% url 'library:categories' %}">Categories</a> &rsaquo;
+    <strong>{{ category_slug }}</strong>
+</p>
+
+<h1>Category: {{ category_slug }}</h1>
+
+<p>Books belonging to this category will be listed here.</p>
+
+<section>
+    <p>Book cards (cover, title, author, date, rating, View and Add to My List buttons)
+       will be rendered here from the database.</p>
+</section>
+
+<nav>
+    <span>PREV</span>
+    <span>1</span>
+    <span>2</span>
+    <span>NEXT</span>
+</nav>
+{% endblock %}

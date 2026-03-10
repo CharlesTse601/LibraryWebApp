@@ -1,0 +1,46 @@
+{% extends 'library/base.html' %}
+
+{% block title %}Register — LibraryWebApp{% endblock %}
+
+{% block content %}
+<div>
+    <div>
+        <h2>Find any Book... In one place.</h2>
+    </div>
+
+    <div>
+        <nav>
+            <a href="{% url 'library:login' %}">LOGIN</a>
+            <a href="{% url 'library:register' %}">REGISTER</a>
+        </nav>
+
+        <h1>Create an Account</h1>
+
+        <form method="POST" action="{% url 'library:register' %}">
+            {% csrf_token %}
+
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Choose a username">
+
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="your@email.com">
+
+            <label for="password1">Password</label>
+            <input type="password" id="password1" name="password1" placeholder="*******">
+
+            <label for="password2">Confirm Password</label>
+            <input type="password" id="password2" name="password2" placeholder="*******">
+
+            <label>Role</label>
+            <div>
+                <button type="button" name="role" value="student">Student</button>
+                <button type="button" name="role" value="admin">Admin</button>
+            </div>
+
+            <button type="submit">Create Account</button>
+        </form>
+
+        <p>Already have an account? <a href="{% url 'library:login' %}">Log in here</a></p>
+    </div>
+</div>
+{% endblock %}

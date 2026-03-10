@@ -1,0 +1,42 @@
+{% extends 'library/base.html' %}
+
+{% block title %}Categories — LibraryWebApp{% endblock %}
+
+{% block content %}
+<p>Browse &rsaquo; <strong>Categories</strong></p>
+
+<h1>Categories</h1>
+
+<form method="GET">
+    <input type="text" name="q" placeholder="Search categories...">
+    <button type="submit">Search</button>
+</form>
+
+<nav>
+    <a href="?filter=all">All</a>
+    <a href="?filter=science">Science</a>
+    <a href="?filter=history">History</a>
+    <a href="?filter=arts">Arts</a>
+    <a href="?filter=medicine">Medicine</a>
+    <a href="?filter=comics">Comics</a>
+</nav>
+
+<section>
+    <h2>Featured Category</h2>
+    <p>Top category this month banner (name, book count, Browse CTA) will appear here.</p>
+</section>
+
+<section>
+    <h2>All Categories</h2>
+    <p>2-column category card grid (icon, name, book count, description, Browse button)
+       will be rendered here from the database.</p>
+</section>
+
+<nav>
+    <span>PREV</span>
+    <span>1</span>
+    <span>2</span>
+    <span>3</span>
+    <span>NEXT</span>
+</nav>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'library/base.html' %}
+
+{% block title %}Recently Published — LibraryWebApp{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'library:browse' %}">Browse</a> &rsaquo; <strong>Recently Published</strong></p>
+
+<h1>Recently Published</h1>
+
+<p>Books sorted by most recently published date will be listed here.</p>
+
+<section>
+    <p>Book cards (cover, title, author, published date, View and Add to My List buttons)
+       will be rendered here from the database.</p>
+</section>
+
+<nav>
+    <span>PREV</span>
+    <span>1</span>
+    <span>2</span>
+    <span>NEXT</span>
+</nav>
+{% endblock %}

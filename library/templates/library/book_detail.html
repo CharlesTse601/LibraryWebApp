@@ -1,0 +1,65 @@
+{% extends 'library/base.html' %}
+
+{% block title %}Book Detail — LibraryWebApp{% endblock %}
+
+{% block content %}
+<p>
+    <a href="{% url 'library:browse' %}">Browse</a> &rsaquo;
+    <a href="{% url 'library:search' %}">Search Results</a> &rsaquo;
+    <strong>Book Title</strong>
+</p>
+
+<h1>Book Title</h1>
+<p>by Author Name</p>
+
+<div>
+    <div>
+        <p>[Book cover image]</p>
+        <p>Overall star rating will appear here.</p>
+
+        <dl>
+            <dt>ISBN</dt>       <dd>{{ book_isbn }}</dd>
+            <dt>Source</dt>     <dd>Placeholder</dd>
+            <dt>Pages</dt>      <dd>Placeholder</dd>
+            <dt>Language</dt>   <dd>Placeholder</dd>
+            <dt>Availability</dt><dd>Placeholder</dd>
+        </dl>
+
+        <a href="#">READ ONLINE</a>
+
+        {% if user.is_authenticated %}
+            <a href="#">MARK AS READ</a>
+            <a href="#">+ ADD TO NEW LIST</a>
+        {% endif %}
+
+        <p>Category rank: Number x for the Category: CategoryName</p>
+    </div>
+
+    <aside>
+        <p>Category tag buttons will appear here.</p>
+    </aside>
+</div>
+
+<section>
+    <h2>Reviews</h2>
+    {% if user.is_authenticated %}
+        <a href="#">+ Add Your Review</a>
+    {% endif %}
+    <label for="sort-reviews">Sort:</label>
+    <select id="sort-reviews" name="sort">
+        <option value="newest">Newest</option>
+        <option value="highest">Highest Rated</option>
+        <option value="lowest">Lowest Rated</option>
+    </select>
+
+    <p>Review cards (username, star rating, body preview, Read More, thumbs up/down)
+       will be rendered here from the database.</p>
+
+    <nav>
+        <span>PREV</span>
+        <span>1</span>
+        <span>2</span>
+        <span>LOAD MORE</span>
+    </nav>
+</section>
+{% endblock %}
