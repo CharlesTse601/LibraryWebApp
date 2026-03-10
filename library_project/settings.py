@@ -1,8 +1,10 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-replace-this-with-a-real-secret-key-in-production'
+
 
 DEBUG = True
 
@@ -61,6 +63,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
+AUTH_USER_MODEL = 'library.User'
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
