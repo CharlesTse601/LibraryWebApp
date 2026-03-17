@@ -6,37 +6,49 @@
 <h1>Search Results</h1>
 
 <form method="GET" action="{% url 'library:search' %}">
-    <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Search by title, author, or ISBN...">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search by title, author, or ISBN...">
     <button type="submit">Search</button>
-</form>
-<p>Results will be shown here.</p>
 
-<div>
     <aside>
         <h3>Filters</h3>
 
         <h4>Date Published</h4>
         <ul>
-            <li>2020–</li>
-            <li>2010–2019</li>
-            <li>Before 2010</li>
+            <li>
+                <input type="radio" name="date" value="" 
+                    {% if not request.GET.date %}checked{% endif %}>
+                <label>All</label>
+            </li>
+            <li>
+                <input type="radio" name="date" value="2020+" 
+                    {% if request.GET.date == '2020+' %}checked{% endif %}>
+                <label>2020+</label>
+            </li>
+            <li>
+                <input type="radio" name="date" value="2010-2019" 
+                    {% if request.GET.date == '2010-2019' %}checked{% endif %}>
+                <label>2010–2019</label>
+            </li>
+            <li>
+                <input type="radio" name="date" value="before2010" 
+                    {% if request.GET.date == 'before2010' %}checked{% endif %}>
+                <label>Before 2010</label>
+            </li>
         </ul>
-
-        <h4>Source</h4>
-        <ul>
-            <li>All Sources</li>
-            <li>Google Books</li>
-            <li>Open Library</li>
-        </ul>
+        <button type="submit">Apply Filters</button>
 
         <h4>Category</h4>
         {% for category in all_categories %}
         <div>
-            <input type="checkbox" name="category" value="{{ category.category_name }}">
+            <input type="checkbox" name="category" value="{{ category.category_name }}"
+                {% if category.category_name in request.GET.category %}checked{% endif %}>
             <label>{{ category.category_name }}</label>
         </div>
         {% endfor %}
+        <button type="submit">Apply Filters</button>
+
     </aside>
+</form>
 
     <section>
         <p>Showing {{ result_count }} result(s) for "{{ query }}"</p>
