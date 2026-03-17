@@ -5,12 +5,12 @@ class User(AbstractUser):
     ROLE_CHOICES = [('student', 'Student'), ('admin', 'Admin')]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='student')
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
-    def __str__ ():
+    def __str__ (self):
         return self.username 
 
 class Category(models.Model):
     category_name = models.CharField(max_length=100, unique=True)
-    category_views = models.IntegerField()
+    category_views = models.IntegerField(default=0)
 
     def __str__(self):
         return self.category_name
@@ -24,7 +24,7 @@ class Book(models.Model):
     published_year = models.IntegerField()
     categories = models.ManyToManyField(Category)
     pages = models.IntegerField()
-    material_url = models.URLField()
+    material_url = models.URLField(blank=True)
     available = models.BooleanField(default=True)
     cover_image_url = models.URLField(blank=True)
 

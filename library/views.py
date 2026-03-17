@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.db.models import Avg, Count
+from django.db.models import Avg, Count,Q
 from .models import Book, Category, BookList, Review, Vote, User
 
 
@@ -34,9 +34,9 @@ def search_view(request):
     # Search by title, author, or ISBN
     if query:
         books = books.filter(
-            models.Q(title__icontains=query) |
-            models.Q(author__icontains=query) |
-            models.Q(isbn__icontains=query)
+            Q(title__icontains=query) |
+            Q(author__icontains=query) |
+            Q(isbn__icontains=query)
         )
 
     # Filter by date published

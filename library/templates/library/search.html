@@ -30,13 +30,42 @@
         </ul>
 
         <h4>Category</h4>
-        <p>Category filter checkboxes will appear here.</p>
+        {% for category in all_categories %}
+        <div>
+            <input type="checkbox" name="category" value="{{ category.category_name }}">
+            <label>{{ category.category_name }}</label>
+        </div>
+        {% endfor %}
     </aside>
 
     <section>
-        <p>Showing results for "{{ request.GET.q }}"</p>
-        <p>Paginated book result cards (cover, title, author, category, date, star rating,
-           + ADD and READ ONLINE buttons) will appear here.</p>
+        <p>Showing {{ result_count }} result(s) for "{{ query }}"</p>
+
+        {% if books %}
+            {% for book in books %}
+            <div>
+                {% if book.cover_image_url %}
+                    <img src="{{ book.cover_image_url }}" alt="{{ book.title }} cover">
+                {% else %}
+                    <div>No Cover</div>
+                {% endif %}
+
+                <h3>{{ book.title }}</h3>
+                <p>{{ book.author }}</p>
+                <p>Published: {{ book.published_year }}</p>
+
+                {% if book.avg_rating %}
+                    <p>Rating: {{ book.avg_rating|floatformat:1 }} / 5</p>
+                {% else %}
+                    <p>No ratings yet</p>
+                {% endif %}
+
+                <a href="{{ book.material_url }}" target="_blank">Read Online</a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No books found for "{{ query }}".</p>
+        {% endif %}
 
         <nav>
             <span>PREV</span>
