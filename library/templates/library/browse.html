@@ -15,12 +15,30 @@
 
 <section>
     <h2>This week's hottest Categories!</h2>
-    <p>Top category tiles will be displayed here.</p>
+    {% for category in top_categories %}
+    <div class="top_categories">
+        <span>#{{ forloop.counter }}</span>
+        <p>{{ category.category_name}}</p>
+    </div>
+    {% endfor %}
+    
     <a href="{% url 'library:categories' %}">Want to see all we have? Click here</a>
 </section>
 
 <section>
     <h2>Check out what's Hot!</h2>
-    <p>Top-ranked book cards (cover, title, View and Add to My List buttons) will appear here.</p>
+    {% for book in hot_books %}
+    <div class="book-card">
+        <span>#{{ forloop.counter }}</span>
+        <img src="{{ book.cover_image_url }}" alt="{{ book.title }}">
+        <p>{{ book.title }}</p>
+        <a href="/books/{{ book.isbn }}">View</a>
+        <form method="POST" action="/lists/add/">
+        {% csrf_token %}
+        <input type="hidden" name="book_isbn" value="{{ book.isbn }}">
+        <button type="submit">+ Add to My List</button>
+        </form>
+    </div>
+{% endfor %}
 </section>
 {% endblock %}
