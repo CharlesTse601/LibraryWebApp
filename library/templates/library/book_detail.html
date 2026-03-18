@@ -6,26 +6,35 @@
 <p>
     <a href="{% url 'library:browse' %}">Browse</a> &rsaquo;
     <a href="{% url 'library:search' %}">Search Results</a> &rsaquo;
-    <strong>Book Title</strong>
+    <strong>{{ book.title }}</strong>
 </p>
 
-<h1>Book Title</h1>
-<p>by Author Name</p>
+<h1>{{ book.title }}</h1>
+<p>by {{ book.author }}</p>
 
 <div>
     <div>
-        <p>[Book cover image]</p>
-        <p>Overall star rating will appear here.</p>
+        {% if book.cover_image_url %}
+        <img src="{{ book.cover_image_url }}" alt="{{ book.title }}">
+        {% else %} 
+        <p> ADD A DEFUALT IMAGE <p> 
+        {% endif %}
+        
+        {% if avg_rating %}
+            <p>{{ avg_rating|floatformat:1 }} / 5</p>
+        {% else %}
+            <p>No ratings yet</p>
+        {% endif %}
 
         <dl>
-            <dt>ISBN</dt>       <dd>{{ book_isbn }}</dd>
-            <dt>Source</dt>     <dd>Placeholder</dd>
-            <dt>Pages</dt>      <dd>Placeholder</dd>
-            <dt>Language</dt>   <dd>Placeholder</dd>
-            <dt>Availability</dt><dd>Placeholder</dd>
+            <dt>ISBN</dt>    <dd>{{ book.isbn }}</dd>
+            <dt>Pages</dt>   <dd>{{ book.pages }}</dd>
+            <dt>Availability</dt> <dd>{% if book.available %}Yes{% else %}No{% endif %}</dd>
         </dl>
 
-        <a href="#">READ ONLINE</a>
+        {% if book.material_url %}
+            <a href="{{ book.material_url }}" target="_blank">READ ONLINE</a>
+        {% endif %}
 
         {% if user.is_authenticated %}
             <a href="#">MARK AS READ</a>
@@ -36,8 +45,10 @@
     </div>
 
     <aside>
-        <p>Category tag buttons will appear here.</p>
-    </aside>
+        {% for category in book.categories.all %}
+            <span>{{ category.category_name }}</span>
+        {% endfor %}
+    </aside>      
 </div>
 
 <section>
@@ -52,8 +63,15 @@
         <option value="lowest">Lowest Rated</option>
     </select>
 
-    <p>Review cards (username, star rating, body preview, Read More, thumbs up/down)
-       will be rendered here from the database.</p>
+    {% for review in reviews %}
+    <div>
+    <strong>{{ review.searcher }}</strong>
+    <span>{{ review.rating }}/5</span>
+    <p>{{ review.body }}</p>
+    </div>
+    {% empty %}
+        <p>No reviews yet.</p>
+    {% endfor %}
 
     <nav>
         <span>PREV</span>

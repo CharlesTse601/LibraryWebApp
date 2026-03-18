@@ -95,8 +95,8 @@ def category_detail_view(request, category_name):
 
 
 
-def book_detail_view(request, category_name, book_isbn):
-    book = get_object_or_404(Book, isbn=book_isbn)
+def book_detail_view(request, isbn):
+    book = get_object_or_404(Book, isbn=isbn)
     reviews = Review.objects.filter(book=book).order_by('-date_of_review')
     avg_rating = reviews.aggregate(Avg('star_rating'))['star_rating__avg']
 
