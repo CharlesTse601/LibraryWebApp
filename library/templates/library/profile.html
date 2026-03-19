@@ -4,12 +4,6 @@
 
 {% block content %}
 <section>
-    {% load static %}
-    {% if user.avatar %}
-            <img src="{{ user.avatar.url }}" alt="Avatar">
-    {% else %}
-            <img src="{% static '/images/User/default_profile_picture.jpg' %}" alt="Avatar">
-    {% endif %}
     <h1>{{ user.username }}</h1>
     <p>Student &mdash; {{ user.email }}</p>
     <a href="{% url 'library:edit_profile' %}">EDIT PROFILE</a>

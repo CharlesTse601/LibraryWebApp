@@ -271,6 +271,7 @@ def user_login_view(request):
             password1 = request.POST.get('password1')
             password2 = request.POST.get('password2')
             role = request.POST.get('role', 'student')
+            avatar = request.POST.get('avatar')
             
             if password1 != password2:
                 messages.error(request, 'Passwords do not match.')
@@ -282,6 +283,8 @@ def user_login_view(request):
             if User.objects.filter(email=email).exists():
                 messages.error(request, 'Email already registered.')
                 return redirect(f"{reverse('library:login')}?tab=register")
+            if avatar: 
+                user.avatar = avatar 
             
             user = User.objects.create_user(username=username, email=email, password=password1)
             user.role = role

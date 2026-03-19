@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     ROLE_CHOICES = [('student', 'Student'), ('admin', 'Admin')]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='student')
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True, default='images/User/default_profile_picture.jpg')
     def __str__ (self):
         return self.username 
 

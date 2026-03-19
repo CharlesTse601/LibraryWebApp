@@ -25,7 +25,7 @@
                 <p>{{ message }}</p>
         {% endfor %}
         <h1>Create an Account</h1>
-        <form method="POST" action="{% url 'library:login' %}?tab=register">
+        <form method="POST" action="{% url 'library:login' %}?tab=register" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="hidden" name="form_type" value="register">
 
@@ -40,6 +40,9 @@
 
             <label for="reg_password2">Confirm Password</label>
             <input type="password" id="reg_password2" name="password2" placeholder="*******">
+            
+            <label for="avatar">Profile Picture (optional)</label>
+            <input type="file" id="avatar" name="avatar" accept="image/*">
 
             <label>Role</label>
             <div>
