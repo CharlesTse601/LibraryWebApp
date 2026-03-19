@@ -18,8 +18,12 @@
             <a href="{% url 'library:login' %}?tab=login">LOGIN</a>
             <a href="{% url 'library:login' %}?tab=register">REGISTER</a>
         </nav>
+        
 
         {% if active_tab == 'register' %}
+        {% for message in messages %}
+                <p>{{ message }}</p>
+        {% endfor %}
         <h1>Create an Account</h1>
         <form method="POST" action="{% url 'library:login' %}?tab=register">
             {% csrf_token %}
@@ -39,8 +43,8 @@
 
             <label>Role</label>
             <div>
-                <button type="button" name="role" value="student">Student</button>
-                <button type="button" name="role" value="admin">Admin</button>
+                <button type="radio" name="role" value="student" checked >Student</button>
+                <button type="radio" name="role" value="admin">Admin</button>
             </div>
 
             <button type="submit">Create Account</button>

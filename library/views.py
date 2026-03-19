@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
+from django.contrib.auth.decorators import login_required 
+from django.contrib import messages 
+from django.contrib.auth import login , logout , authenticate 
 from django.db.models import Avg, Count,Q
 from django.urls import reverse 
 from .models import Book, Category, BookList, Review, Vote, User
@@ -237,6 +238,9 @@ def user_login_view(request):
             if User.objects.filter(username=username).exists():
                 messages.error(request, 'Username already taken.')
                 return redirect(f"{reverse('library:login')}?tab=register")
+            if User.objects.filter(email=email).exists():
+                messages.error(request, 'Email already registered.')
+                return redirect(f"{reverse('library:login')}?tab=register")
             
             user = User.objects.create_user(username=username, email=email, password=password1)
             user.role = role
@@ -257,7 +261,6 @@ def user_login_view(request):
                 return redirect(f"{reverse('library:login')}?tab=login")
     
     return render(request, 'library/login.html', {'active_tab': active_tab})
-    return render(request, 'library/login.html')
 
 def user_logout_view(request):
     logout(request)
