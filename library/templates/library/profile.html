@@ -28,14 +28,18 @@
 <div>
     <nav>
         <h2>My Lists</h2>
+
         {% if lists %}
         {% for list in lists %}
-        {{ list.list_name}}
+            <a href="{% url 'library:list_detail' list.id %}">{{ list.list_name }}</a>
+            <form method="POST" action="{% url 'library:remove_list' list.id%}">
+            {% csrf_token %}
+            <button type="submit">Delete</button>
+            </form>
         {% endfor %}
         {% endif %}
         <a href="{% url 'library:my_books' %}">Read History</a>
         <a href="{% url 'library:my_books' %}">Wishlist</a>
-        <p>DEBUG ISBN: {{ book.isbn }}</p>
          <form method="POST" action="{% url 'library:create_new_list' %}">
                 {% csrf_token %}
                 <input type="text" name="list_name" placeholder="New list name...">

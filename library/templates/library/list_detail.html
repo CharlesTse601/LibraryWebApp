@@ -1,0 +1,25 @@
+{% extends 'library/base.html' %}
+{% block content %}
+<form method="POST" action="{% url 'library:remove_list'  book_list.id %}">
+     {% csrf_token %}
+    <button type="submit"> Delete {{list_name}}</button>
+</form>
+
+<h1>{{ book_list.list_name }}</h1>
+<p>{{ books.count }} book</p>
+
+{% for book in books %}
+  <div>
+    {% if book.cover_image_url %}
+      <img src="{{ book.cover_image_url }}" alt="{{ book.title }}">
+    {% endif %}
+    <p>{{ book.title }}</p>
+    <p>{{ book.author }}</p>
+    <a href="{% url 'library:book_detail' book.isbn %}">View</a>
+  </div>
+{% empty %}
+  <p>No books in this list yet.</p>
+{% endfor %}
+
+<a href="{% url 'library:profile' %}">Back to Profile</a>
+{% endblock %}

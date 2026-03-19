@@ -170,6 +170,14 @@ def profile_view(request):
         'review_count': Review.objects.filter(user=user).count(),
     })
 @login_required
+def list_detail_view(request, list_id):
+    book_list = get_object_or_404(BookList, id=list_id, user=request.user)
+    books = book_list.books.all()
+    return render(request, 'library/list_detail.html', {
+        'book_list': book_list,
+        'books': books,
+    })
+@login_required
 def create_new_list(request):
     if request.method == 'POST':
         list_name = request.POST.get('list_name')
@@ -196,13 +204,10 @@ def create_list_with_book(request,book_isbn):
             new_list.books.add(book)
     return redirect(request.META.get('HTTP_REFERER', 'library:profile'))
 @login_required 
-def remove_list(request):
-    if request.method == 'GET':
-        list_name == request.GET.get('list_name')
-        if list_name:
-            BookList.objects.delete(user = request.user,
-                                    list_name = list_name)
-        return redirect( request.META.get('HTTP_REFERER','library:profile'))
+def remove_list(request,list_id):
+    if request.method == 'POST':
+        BookList.objects.filter(user=request.user, id=list_id).delete()
+        return redirect('library:profile')
 @login_required
 def add_to_list(request, list_id, book_isbn):
     book_list = get_object_or_404(BookList, id=list_id, user=request.user)
@@ -306,3 +311,11 @@ def my_books_view(request):
     lists = BookList.objects.filter(user=request.user)
     read_history = lists.filter(list_type='read').first()
     return render(request, 'library/my_books.html', {'lists': lists,'read_history':read_history})
+
+def book_detail(request, isbn):
+        book = get_object_or_404(Book, isbn=isbn)
+        reviews = book.review_set.all().order_by('-created_at')
+        return render(request, 'book_detail.html', {
+            'book': book,
+            'reviews': reviews,
+    })

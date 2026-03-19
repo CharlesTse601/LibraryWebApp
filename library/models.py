@@ -27,17 +27,10 @@ class Book(models.Model):
     material_url = models.URLField(blank=True)
     available = models.BooleanField(default=True)
     cover_image_url = models.URLField(blank=True)
-    
 
     def __str__(self):
         return self.title
-    def book_detail(request, isbn):
-        book = get_object_or_404(Book, isbn=isbn)
-        reviews = book.review_set.all().order_by('-created_at')
-        return render(request, 'book_detail.html', {
-            'book': book,
-            'reviews': reviews,
-    })
+  
 class BookList(models.Model):
     LIST_TYPES = [('wishlist', 'Wishlist'), ('read', 'Read'), ('custom', 'Custom')]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
