@@ -1,0 +1,32 @@
+{% extends 'library/base.html' %}
+{% block content %}
+
+<h1>Edit Profile</h1>
+
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  
+  <label>Username</label>
+  <input type="text" name="username" value="{{ user.username }}">
+
+  <label>Email</label>
+  <input type="email" name="email" value="{{ user.email }}">
+
+  <label>Profile Picture</label>
+  <input type="file" name="avatar" accept="image/*">
+
+  <label>New Password</label>
+  <input type="password" name="password1" placeholder="Leave blank to keep current">
+
+  <label>Confirm New Password</label>
+  <input type="password" name="password2" placeholder="Leave blank to keep current">
+
+  <button type="submit">Save Changes</button>
+  <a href="{% url 'library:profile' %}">Cancel</a>
+</form>
+
+{% for message in messages %}
+  <p>{{ message }}</p>
+{% endfor %}
+
+{% endblock %}

@@ -23,6 +23,7 @@ urlpatterns = [
     path('contacts/', views.contacts_view, name='contacts'),
     path('privacy-policy/', views.privacy_policy_view, name='privacy_policy'),
     path('terms-of-service/', views.terms_of_service_view, name='terms_of_service'),
+    path('login/myaccount/edit/', views.edit_profile_view, name='edit_profile'),
     path('login/', views.user_login_view, name='login'),
     path('logout/', views.user_logout_view, name='logout'),
     path('login/myaccount/', views.profile_view, name='profile'),

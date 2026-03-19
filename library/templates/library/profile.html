@@ -12,7 +12,7 @@
     {% endif %}
     <h1>{{ user.username }}</h1>
     <p>Student &mdash; {{ user.email }}</p>
-    <a href="#">EDIT PROFILE</a>
+    <a href="{% url 'library:edit_profile' %}">EDIT PROFILE</a>
 </section>
 
 <section>

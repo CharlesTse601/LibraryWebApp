@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required 
 from django.contrib import messages 
-from django.contrib.auth import login , logout , authenticate 
+from django.contrib.auth import login , logout , authenticate, update_session_auth_hash
 from django.db.models import Avg, Count,Q
 from django.urls import reverse 
 from .models import Book, Category, BookList, Review, Vote, User
@@ -311,6 +311,35 @@ def my_books_view(request):
     lists = BookList.objects.filter(user=request.user)
     read_history = lists.filter(list_type='read').first()
     return render(request, 'library/my_books.html', {'lists': lists,'read_history':read_history})
+@login_required
+def edit_profile_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+        avatar = request.FILES.get('avatar')
+
+        user = request.user
+
+        if username:
+            user.username = username
+        if email:
+            user.email = email
+        if avatar:
+            user.avatar = avatar
+        if password1 and password2:
+            if password1 == password2:
+                user.set_password(password1)
+            else:
+                messages.error(request, 'Passwords do not match.')
+                return redirect('library:edit_profile')
+
+        user.save()
+        update_session_auth_hash(request, user)
+        return redirect('library:profile')
+
+    return render(request, 'library/edit_profile.html')
 
 def book_detail(request, isbn):
         book = get_object_or_404(Book, isbn=isbn)
