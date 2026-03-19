@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.db.models import Avg, Count,Q
+from django.urls import reverse 
 from .models import Book, Category, BookList, Review, Vote, User
 
 
@@ -213,6 +215,48 @@ def terms_of_service_view(request):
     return render(request, 'library/terms_of_service.html')
 
 def user_login_view(request):
+    from django.contrib.auth import authenticate, login, logout
+
+def user_login_view(request):
+    active_tab = request.GET.get('tab', 'login')
+    
+    if request.method == 'POST':
+        form_type = request.POST.get('form_type')
+        
+        if form_type == 'register':
+            username = request.POST.get('username')
+            email = request.POST.get('email')
+            password1 = request.POST.get('password1')
+            password2 = request.POST.get('password2')
+            role = request.POST.get('role', 'student')
+            
+            if password1 != password2:
+                messages.error(request, 'Passwords do not match.')
+                return redirect(f"{reverse('library:login')}?tab=register")
+            
+            if User.objects.filter(username=username).exists():
+                messages.error(request, 'Username already taken.')
+                return redirect(f"{reverse('library:login')}?tab=register")
+            
+            user = User.objects.create_user(username=username, email=email, password=password1)
+            user.role = role
+            user.save()
+            login(request, user)
+            return redirect('library:browse')
+        
+        elif form_type == 'login':
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            user = authenticate(request, username=username, password=password)
+            
+            if user is not None:
+                login(request, user)
+                return redirect('library:browse')
+            else:
+                messages.error(request, 'Invalid username or password.')
+                return redirect(f"{reverse('library:login')}?tab=login")
+    
+    return render(request, 'library/login.html', {'active_tab': active_tab})
     return render(request, 'library/login.html')
 
 def user_logout_view(request):
