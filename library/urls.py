@@ -9,6 +9,7 @@ urlpatterns = [
     path('books/<str:isbn>/', views.book_detail_view, name='book_detail'),
     path('books/<str:book_isbn>/mark-as-read/', views.mark_as_read, name='mark_as_read'),   
     path('lists/<int:list_id>/add/<str:book_isbn>/', views.add_to_list, name='add_to_list'),
+    path('lists/<int:list_id>/remove/<str:book_isbn>/', views.remove_book_from_list, name='remove_book_from_list'),
     path('lists/create-new',views.create_new_list, name = 'create_new_list' ) ,
     path('lists/create/<str:book_isbn>/', views.create_list_with_book, name='create_list_with_book'),
     path('lists/<int:list_id>/', views.list_detail_view, name='list_detail'),

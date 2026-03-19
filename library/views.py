@@ -217,12 +217,12 @@ def add_to_list(request, list_id, book_isbn):
     return redirect(request.META.get('HTTP_REFERER', 'browse'))
 
 @login_required
-def remove_from_list(request, list_id, book_isbn):
+def remove_book_from_list(request, list_id, book_isbn):
     book_list = get_object_or_404(BookList, id=list_id, user=request.user)
     book = get_object_or_404(Book, isbn=book_isbn)
     book_list.books.remove(book)
 
-    return redirect(request.META.get('HTTP_REFERER', 'browse'))
+    return redirect('library:list_detail', list_id=list_id)
 
 
 @login_required

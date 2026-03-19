@@ -16,6 +16,10 @@
     <p>{{ book.title }}</p>
     <p>{{ book.author }}</p>
     <a href="{% url 'library:book_detail' book.isbn %}">View</a>
+    <form method="POST" action="{% url 'library:remove_book_from_list' book_list.id book.isbn %}">
+        {% csrf_token %}
+    <button type="submit">Remove</button>
+  </form>
   </div>
 {% empty %}
   <p>No books in this list yet.</p>
