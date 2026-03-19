@@ -4,7 +4,12 @@
 
 {% block content %}
 <section>
-    <p>[Avatar]</p>
+    {% load static %}
+    {% if user.avatar %}
+            <img src="{{ user.avatar.url }}" alt="Avatar">
+    {% else %}
+            <img src="{% static '/images/User/default_profile_picture.jpg' %}" alt="Avatar">
+    {% endif %}
     <h1>{{ user.username }}</h1>
     <p>Student &mdash; {{ user.email }}</p>
     <a href="#">EDIT PROFILE</a>
@@ -12,7 +17,7 @@
 
 <section>
     <dl>
-        <dt>Books Read</dt> <dd>0</dd>
+        <dt> Books read </dt> <dd> {{ books_read }}</dd>
         <dt>Wishlist</dt>   <dd>0</dd>
         <dt>Lists</dt>      <dd>0</dd>
         <dt>Reviews</dt>    <dd>0</dd>
@@ -30,6 +35,13 @@
 
     <section>
         <h2>Read History</h2>
+        {% for book in read_history.books.all %}
+            <p>{{ book.title }}</p>
+            <p>{{ book.author }}</p>
+            <a href="{% url 'library:book_detail' book.isbn %}">View</a>
+        {% empty %}
+            <p>No books read yet.</p>
+        {% endfor %}
 
         <form method="GET">
             <input type="text" name="q" placeholder="Search list...">

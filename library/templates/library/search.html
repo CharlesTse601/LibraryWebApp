@@ -71,6 +71,7 @@
                 {% else %}
                     <p>No ratings yet</p>
                 {% endif %}
+                <a href="{% url 'library:book_detail' book.isbn %}">View</a>
 
                 <a href="{{ book.material_url }}" target="_blank">Read Online</a>
             </div>

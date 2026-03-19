@@ -37,7 +37,10 @@
         {% endif %}
 
         {% if user.is_authenticated %}
-            <a href="#">MARK AS READ</a>
+            <form method="POST" action="{% url 'library:mark_as_read' book.isbn %}">
+                {% csrf_token %}
+                <button type="submit">MARK AS READ</button>
+            </form>
             <a href="#">+ ADD TO NEW LIST</a>
         {% endif %}
 

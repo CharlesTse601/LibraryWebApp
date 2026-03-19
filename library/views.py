@@ -215,8 +215,6 @@ def privacy_policy_view(request):
 def terms_of_service_view(request):
     return render(request, 'library/terms_of_service.html')
 
-def user_login_view(request):
-    from django.contrib.auth import authenticate, login, logout
 
 def user_login_view(request):
     active_tab = request.GET.get('tab', 'login')
@@ -268,4 +266,5 @@ def user_logout_view(request):
 
 def my_books_view(request):
     lists = BookList.objects.filter(user=request.user)
-    return render(request, 'library/my_books.html', {'lists': lists})
+    read_history = lists.filter(list_type='read').first()
+    return render(request, 'library/my_books.html', {'lists': lists,'read_history':read_history})

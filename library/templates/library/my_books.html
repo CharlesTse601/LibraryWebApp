@@ -9,6 +9,14 @@
 </p>
 
 <h1>My Books</h1>
+ {% for book in read_history.books.all %}
+            <p>{{ book.title }}</p>
+            <p>{{ book.author }}</p>
+            <a href="{% url 'library:book_detail' book.isbn %}">View</a>
+        {% empty %}
+            <p>No books read yet.</p>
+{% endfor %}
+
 
 <div>
     <nav>
