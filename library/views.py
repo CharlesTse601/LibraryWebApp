@@ -102,11 +102,15 @@ def book_detail_view(request, isbn):
     book = get_object_or_404(Book, isbn=isbn)
     reviews = Review.objects.filter(book=book).order_by('-date_of_review')
     avg_rating = reviews.aggregate(Avg('star_rating'))['star_rating__avg']
+    review_count = reviews.count()
+    user_lists = BookList.objects.filter(user=request.user) if request.user.is_authenticated else []
 
     return render(request, 'library/book_detail.html', {
         'book': book,
         'reviews': reviews,
         'avg_rating': avg_rating,
+        'review_count':review_count, 
+        'user_lists':user_lists ,
     })
 
 
@@ -152,19 +156,53 @@ def vote_review(request, review_id):
 def profile_view(request):
     user = request.user
     lists = BookList.objects.filter(user=user)
+    num_lists = lists.count()
     read_history = lists.filter(list_type='read').first()
     wishlist = lists.filter(list_type='wishlist').first()
 
     return render(request, 'library/profile.html', {
         'user': user,
         'lists': lists,
+        'num_lists':num_lists,
         'read_history': read_history,
         'wishlist': wishlist,
         'books_read': read_history.books.count() if read_history else 0,
         'review_count': Review.objects.filter(user=user).count(),
     })
+@login_required
+def create_new_list(request):
+    if request.method == 'POST':
+        list_name = request.POST.get('list_name')
+        if list_name:
+            BookList.objects.create(
+                user=request.user,
+                list_name=list_name,
+                list_type='custom'
+            )
+            
+    return redirect(request.META.get('HTTP_REFERER', 'library:profile'))
 
-
+@login_required
+def create_list_with_book(request,book_isbn):
+    if request.method == 'POST':
+        list_name = request.POST.get('list_name')
+        if list_name:
+            book = get_object_or_404(Book, isbn=book_isbn)
+            new_list =BookList.objects.create(
+                user=request.user,
+                list_name=list_name,
+                list_type='custom'
+            )
+            new_list.books.add(book)
+    return redirect(request.META.get('HTTP_REFERER', 'library:profile'))
+@login_required 
+def remove_list(request):
+    if request.method == 'GET':
+        list_name == request.GET.get('list_name')
+        if list_name:
+            BookList.objects.delete(user = request.user,
+                                    list_name = list_name)
+        return redirect( request.META.get('HTTP_REFERER','library:profile'))
 @login_required
 def add_to_list(request, list_id, book_isbn):
     book_list = get_object_or_404(BookList, id=list_id, user=request.user)

@@ -32,6 +32,11 @@
         <span>#{{ forloop.counter }}</span>
         <img src="{{ book.cover_image_url }}" alt="{{ book.title }}">
         <p>{{ book.title }}</p>
+        {% if book.avg_rating %}
+            <p>{{ book.avg_rating|floatformat:1 }} / 5 ({{ book.review_count }} reviews)</p>
+        {% else %}
+            <p> No reviews yet</p>
+        {% endif %}
         <a href="{% url 'library:book_detail' book.isbn %}">View</a>
         <form method="POST" action="/lists/add/">
         {% csrf_token %}

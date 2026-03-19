@@ -20,8 +20,8 @@
         <p> ADD A DEFUALT IMAGE <p> 
         {% endif %}
         
-        {% if avg_rating %}
-            <p>{{ avg_rating|floatformat:1 }} / 5</p>
+       {% if avg_rating %}
+            <p>{{ avg_rating|floatformat:1 }} / 5 ({{ review_count }} reviews)</p>
         {% else %}
             <p>No ratings yet</p>
         {% endif %}
@@ -41,7 +41,17 @@
                 {% csrf_token %}
                 <button type="submit">MARK AS READ</button>
             </form>
-            <a href="#">+ ADD TO NEW LIST</a>
+        {% for list in user_lists %}
+            <form method="POST" action="{% url 'library:add_to_list' list.id book.isbn %}">
+             {% csrf_token %}
+            <button type="submit">Add to {{ list.list_name }}</button>
+            </form>
+        {% endfor %}
+            <form method="POST" action="{% url 'library:create_list_with_book' book.isbn %}">
+                {% csrf_token %}
+                <input type="text" name="list_name" placeholder="New list name...">
+                <button type="submit">+ Create & Add</button>
+            </form>
         {% endif %}
 
         <p>Category rank: Number x for the Category: CategoryName</p>

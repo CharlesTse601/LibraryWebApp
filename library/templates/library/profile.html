@@ -19,7 +19,7 @@
     <dl>
         <dt> Books read </dt> <dd> {{ books_read }}</dd>
         <dt>Wishlist</dt>   <dd>0</dd>
-        <dt>Lists</dt>      <dd>0</dd>
+        <dt>My Lists</dt>      <dd> {{ num_lists}}</dd>
         <dt>Reviews</dt>    <dd>0</dd>
         <dt>Upvotes</dt>    <dd>0</dd>
     </dl>
@@ -28,16 +28,28 @@
 <div>
     <nav>
         <h2>My Lists</h2>
+        {% if lists %}
+        {% for list in lists %}
+        {{ list.list_name}}
+        {% endfor %}
+        {% endif %}
         <a href="{% url 'library:my_books' %}">Read History</a>
         <a href="{% url 'library:my_books' %}">Wishlist</a>
-        <a href="#">+ Add New List</a>
+        <p>DEBUG ISBN: {{ book.isbn }}</p>
+         <form method="POST" action="{% url 'library:create_new_list' %}">
+                {% csrf_token %}
+                <input type="text" name="list_name" placeholder="New list name...">
+                <button type="submit">+ New List</button>
+            </form>
     </nav>
 
     <section>
         <h2>Read History</h2>
         {% for book in read_history.books.all %}
+            <p>{{book.cover_image_url }}</p>
             <p>{{ book.title }}</p>
             <p>{{ book.author }}</p>
+            <p> {{ book.star_rating }} </p>
             <a href="{% url 'library:book_detail' book.isbn %}">View</a>
         {% empty %}
             <p>No books read yet.</p>
