@@ -18,10 +18,12 @@ def browse_view(request):
     hot_books = Book.objects.annotate(
         avg_rating=Avg('review__star_rating')
     ).order_by('-avg_rating')[:10]
+    user_lists = BookList.objects.filter(user=request.user) if request.user.is_authenticated else []
 
     return render(request, 'library/browse.html', {
         'top_categories': top_categories,
         'hot_books': hot_books,
+        'user_lists':user_lists,
     })
 
 
