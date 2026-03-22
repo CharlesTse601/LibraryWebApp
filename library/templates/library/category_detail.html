@@ -6,22 +6,29 @@
 <p>
     <a href="{% url 'library:browse' %}">Browse</a> &rsaquo;
     <a href="{% url 'library:categories' %}">Categories</a> &rsaquo;
-    <strong>{{ category_slug }}</strong>
+    <strong>{{ category.category_name }}</strong>
 </p>
 
-<h1>Category: {{ category_slug }}</h1>
-
-<p>Books belonging to this category will be listed here.</p>
+<h1>{{ category.category_name }}</h1>
 
 <section>
-    <p>Book cards (cover, title, author, date, rating, View and Add to My List buttons)
-       will be rendered here from the database.</p>
+    {% for book in books %}
+    <div>
+        {% if book.cover_image_url %}
+            <img src="{{ book.cover_image_url }}" alt="{{ book.title }}">
+        {% endif %}
+        <h3>{{ book.title }}</h3>
+        <p>{{ book.author }}</p>
+        <p>{{ book.published_year }}</p>
+        {% if book.avg_rating %}
+            <p>{{ book.avg_rating|floatformat:1 }} / 5</p>
+        {% else %}
+            <p>No ratings yet</p>
+        {% endif %}
+        <a href="{% url 'library:book_detail' book.isbn %}">View</a>
+    </div>
+    {% empty %}
+        <p>No books in this category yet.</p>
+    {% endfor %}
 </section>
-
-<nav>
-    <span>PREV</span>
-    <span>1</span>
-    <span>2</span>
-    <span>NEXT</span>
-</nav>
 {% endblock %}

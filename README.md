@@ -7,24 +7,27 @@ python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
 python manage.py migrate
+python population_script.py
+python api_population.py
 python manage.py runserver
 ```
 Then open `http://127.0.0.1:8000/`
 
 ## TODO LIST
-- [ ] Define models — Category, Book, Searcher, BookList, BookListItem, Review, Vote
-- [ ] Run makemigrations and migrate after models are done
+- [x] Define models — Category, Book, Searcher, BookList, BookListItem, Review, Vote
+- [x] Run makemigrations and migrate after models are done
 - [ ] Register models in admin.py
-- [x] Implement browse view — skeleton in place
-- [x] Implement search view — skeleton in place
-- [x] Implement categories view — skeleton in place
-- [x] Implement category_detail view — skeleton in place
-- [x] Implement book_detail view — skeleton in place
-- [x] Implement recently_published view — skeleton in place
-- [x] Implement user_login — skeleton in place (login + register tab at /login/)
+- [x] Implement browse view
+- [x] Implement search view
+- [x] Implement categories view
+- [x] Implement category_detail view
+- [x] Implement book_detail view
+- [x] Implement recently_published view
+- [x] Implement user_login — login + register tab at /login/
 - [x] Implement register — combined into /login/?tab=register
-- [x] Implement profile — skeleton in place at /login/myaccount/
-- [x] Implement my_books — skeleton in place at /login/myaccount/mybooks/
+- [x] Implement profile — at /login/myaccount/
+- [x] Implement my_books — at /login/myaccount/mybooks/
+- [x] Populate database via Open Library API
 - [ ] Implement contacts — handle form POST
 - [ ] Add Bootstrap to all templates
 - [ ] Style navbar and footer
@@ -35,10 +38,10 @@ Then open `http://127.0.0.1:8000/`
 - [ ] Style login/register page — split-screen layout
 - [ ] Style profile page — stats bar, sidebar, book list
 - [ ] Make layout responsive (mobile/tablet/desktop)
-- [ ] Replace all placeholder text with real data from DB
+- [x] Replace all placeholder text with real data from DB
 - [ ] Add pagination where needed
-- [ ] Add AJAX for add to list, mark as read, reviews, votes
-- [ ] Write population_script.py with sample data
+- [x] Add AJAX for add to list, mark as read, reviews
+- [x] Write population_script.py with sample data
 - [ ] Unit test — test all views return correct status codes
 - [ ] Unit test — test login redirects authenticated users
 - [ ] Unit test — test profile and my_books redirect when not logged in

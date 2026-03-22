@@ -38,11 +38,7 @@
             <p> No reviews yet</p>
         {% endif %}
         <a href="{% url 'library:book_detail' book.isbn %}">View</a>
-        <form method="POST" action="/lists/add/">
-        {% csrf_token %}
-        <input type="hidden" name="book_isbn" value="{{ book.isbn }}">
-        <button type="submit">+ Add to My List</button>
-        </form>
+        <a href="{% url 'library:book_detail' book.isbn %}">+ Add to My List</a>
     </div>
 {% endfor %}
 </section>

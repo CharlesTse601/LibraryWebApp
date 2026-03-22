@@ -21,22 +21,22 @@
     <a href="?filter=comics">Comics</a>
 </nav>
 
+{% if featured %}
 <section>
     <h2>Featured Category</h2>
-    <p>Top category this month banner (name, book count, Browse CTA) will appear here.</p>
+    <p>{{ featured.category_name }} — {{ featured.book_count }} books</p>
+    <a href="{% url 'library:category_detail' featured.category_name %}">Browse</a>
 </section>
+{% endif %}
 
 <section>
     <h2>All Categories</h2>
-    <p>2-column category card grid (icon, name, book count, description, Browse button)
-       will be rendered here from the database.</p>
+    {% for category in categories %}
+    <div>
+        <h3>{{ category.category_name }}</h3>
+        <p>{{ category.book_count }} books</p>
+        <a href="{% url 'library:category_detail' category.category_name %}">Browse</a>
+    </div>
+    {% endfor %}
 </section>
-
-<nav>
-    <span>PREV</span>
-    <span>1</span>
-    <span>2</span>
-    <span>3</span>
-    <span>NEXT</span>
-</nav>
 {% endblock %}
