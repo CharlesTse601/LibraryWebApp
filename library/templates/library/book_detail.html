@@ -1,68 +1,23 @@
 {% extends 'library/base.html' %}
+{% load static %}
 
-{% block title %}Book Detail — LibraryWebApp{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/book_detail.css' %}">
+{% endblock %}
+
+{% block title %}{{ book.title }} — LibraryWebApp{% endblock %}
 
 {% block content %}
-<p>
-    <a href="{% url 'library:browse' %}">Browse</a> &rsaquo;
-    <a href="{% url 'library:search' %}">Search Results</a> &rsaquo;
-    <strong>{{ book.title }}</strong>
-</p>
 
-<h1>{{ book.title }}</h1>
-<p>by {{ book.author }}</p>
-
-<div>
-    <div>
-        {% if book.cover_image_url %}
-        <img src="{{ book.cover_image_url }}" alt="{{ book.title }}">
-        {% else %} 
-        <p> ADD A DEFUALT IMAGE <p> 
-        {% endif %}
-        
-       {% if avg_rating %}
-            <p>{{ avg_rating|floatformat:1 }} / 5 ({{ review_count }} reviews)</p>
-        {% else %}
-            <p>No ratings yet</p>
-        {% endif %}
-
-        <dl>
-            <dt>ISBN</dt>    <dd>{{ book.isbn }}</dd>
-            <dt>Pages</dt>   <dd>{{ book.pages }}</dd>
-            <dt>Availability</dt> <dd>{% if book.available %}Yes{% else %}No{% endif %}</dd>
-        </dl>
-
-        {% if book.material_url %}
-            <a href="{{ book.material_url }}" target="_blank">READ ONLINE</a>
-        {% endif %}
-
-        {% if user.is_authenticated %}
-            <form method="POST" action="{% url 'library:mark_as_read' book.isbn %}">
-                {% csrf_token %}
-                <button type="submit">MARK AS READ</button>
-            </form>
-        {% for list in user_lists %}
-            <form method="POST" action="{% url 'library:add_to_list' list.id book.isbn %}">
-             {% csrf_token %}
-            <button type="submit">Add to {{ list.list_name }}</button>
-            </form>
-        {% endfor %}
-            <form method="POST" action="{% url 'library:create_list_with_book' book.isbn %}">
-                {% csrf_token %}
-                <input type="text" name="list_name" placeholder="New list name...">
-                <button type="submit">+ Create & Add</button>
-            </form>
-        {% endif %}
-
-    </div>
-
-    <aside>
-        {% for category in book.categories.all %}
-            <span>{{ category.category_name }}</span>
-        {% endfor %}
-    </aside>      
+<div class="bd-breadcrumb" aria-label="breadcrumb">
+  <a href="{% url 'library:browse' %}">Browse</a>
+  <span>&rsaquo;</span>
+  <a href="{% url 'library:search' %}">Search Results</a>
+  <span>&rsaquo;</span>
+  <span>{{ book.title }}</span>
 </div>
 
+<<<<<<< HEAD
 <section>
     <h2>Reviews</h2>
     {% if user.is_authenticated %}
@@ -119,29 +74,202 @@
     {% empty %}
         <p id="no-reviews">No reviews yet.</p>
     {% endfor %}
+=======
+<div class="bd-hero">
+
+  <!-- Left: cover + action buttons -->
+  <div class="bd-hero__left">
+    {% if book.cover_image_url %}
+      <img class="bd-cover" src="{{ book.cover_image_url }}" alt="{{ book.title }}">
+    {% else %}
+      <div class="bd-cover bd-cover--placeholder">No Cover</div>
+    {% endif %}
+
+    {% if book.material_url %}
+      <a class="bd-btn bd-btn--dark" href="{{ book.material_url }}" target="_blank">READ ONLINE</a>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+      {% if is_read %}
+        <button class="bd-btn bd-btn--read" disabled>&#10003; Marked as Read</button>
+      {% else %}
+        <form method="POST" action="{% url 'library:mark_as_read' book.isbn %}">
+          {% csrf_token %}
+          <button type="submit" class="bd-btn bd-btn--outline">&#10003; MARK AS READ</button>
+        </form>
+      {% endif %}
+
+      <button class="bd-btn bd-btn--outline" onclick="document.getElementById('list-panel').classList.toggle('open')">
+        + ADD NEW LIST
+      </button>
+      <div id="list-panel" class="bd-list-panel">
+        {% for list in user_lists %}
+          <form method="POST" action="{% url 'library:add_to_list' list.id book.isbn %}">
+            {% csrf_token %}
+            <button type="submit" class="bd-list-item">Add to {{ list.list_name }}</button>
+          </form>
+        {% endfor %}
+        <form method="POST" action="{% url 'library:create_list_with_book' book.isbn %}" class="bd-new-list-form">
+          {% csrf_token %}
+          <input type="text" name="list_name" placeholder="New list name...">
+          <button type="submit">+ Create &amp; Add</button>
+        </form>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Center: title, info box, rank line -->
+  <div class="bd-hero__center">
+    <h1 class="bd-title">{{ book.title }}</h1>
+    <p class="bd-author">by <strong>{{ book.author }}</strong></p>
+
+    <div class="bd-rating-badge">
+      {% if avg_rating %}
+        {% for i in "12345" %}
+          <span class="bd-star{% if forloop.counter <= avg_rating|floatformat:"0"|add:"0" %} filled{% endif %}">&#9733;</span>
+        {% endfor %}
+        <span class="bd-rating-text">{{ avg_rating|floatformat:1 }} &nbsp;({{ review_count }} reviews)</span>
+      {% else %}
+        <span class="bd-rating-text">No ratings yet</span>
+      {% endif %}
+>>>>>>> 9592a91 (Added css and js for book view, reviews are functional and can be voted on)
     </div>
 
-    <nav>
-        <span>PREV</span>
-        <span>1</span>
-        <span>2</span>
-        <span>LOAD MORE</span>
-    </nav>
+    <div class="bd-info-box">
+      <dl class="bd-info-list">
+        <dt>ISBN :</dt>        <dd>{{ book.isbn }}</dd>
+        <dt>SOURCE:</dt>       <dd>{% if book.material_url %}<a href="{{ book.material_url }}" target="_blank">Link</a>{% else %}—{% endif %}</dd>
+        <dt>PAGES :</dt>       <dd>{{ book.pages }}</dd>
+        <dt>LANGUAGE:</dt>     <dd>English</dd>
+        <dt>Availability:</dt> <dd>{% if book.available %}<span class="bd-avail--yes">&#10003;</span>{% else %}<span class="bd-avail--no">&#10007;</span>{% endif %}</dd>
+      </dl>
+    </div>
+
+    {% with book.categories.first as primary_cat %}
+      {% if primary_cat %}
+        <p class="bd-rank-line">
+          Number <span class="bd-accent">{{ book.categories.count }}</span> for the Category :
+          <a href="{% url 'library:category_detail' primary_cat.category_name %}" class="bd-accent">{{ primary_cat.category_name }}</a>
+        </p>
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- Right: categories -->
+  <aside class="bd-hero__right">
+    {% for category in book.categories.all %}
+      <a href="{% url 'library:category_detail' category.category_name %}" class="bd-cat-tag">
+        {{ category.category_name }}
+      </a>
+    {% endfor %}
+  </aside>
+
+</div>
+
+<!-- Reviews section -->
+<section class="bd-reviews">
+
+  <div class="bd-reviews__top">
+    <h2 class="bd-reviews__title">Reviews</h2>
+    <div class="bd-reviews__controls">
+      {% if user.is_authenticated %}
+        <button class="bd-btn bd-btn--dark"
+                onclick="document.getElementById('review-form-panel').classList.toggle('open')">
+          + Add Your Review
+        </button>
+      {% endif %}
+      <form method="GET" id="sort-form">
+        <select name="sort" class="bd-sort-select" onchange="document.getElementById('sort-form').submit()">
+          <option value="date_new"      {% if current_sort == 'date_new'      %}selected{% endif %}>SORT &#9660; Newest</option>
+          <option value="date_old"      {% if current_sort == 'date_old'      %}selected{% endif %}>SORT &#9660; Oldest</option>
+          <option value="rating_high"   {% if current_sort == 'rating_high'   %}selected{% endif %}>SORT &#9660; Highest Rating</option>
+          <option value="rating_low"    {% if current_sort == 'rating_low'    %}selected{% endif %}>SORT &#9660; Lowest Rating</option>
+          <option value="most_liked"    {% if current_sort == 'most_liked'    %}selected{% endif %}>SORT &#9660; Most Liked</option>
+          <option value="most_disliked" {% if current_sort == 'most_disliked' %}selected{% endif %}>SORT &#9660; Most Disliked</option>
+        </select>
+      </form>
+    </div>
+  </div>
+
+  {% if user.is_authenticated %}
+  <div id="review-form-panel" class="bd-review-form-panel">
+    <form method="POST" action="{% url 'library:add_review' book.isbn %}" id="review-form">
+      {% csrf_token %}
+      <div class="bd-review-form__row">
+        <label for="star-select">Rating</label>
+        <select name="star_rating" id="star-select" class="bd-review-form__select">
+          <option value="1">1 &#9733;</option>
+          <option value="2">2 &#9733;&#9733;</option>
+          <option value="3">3 &#9733;&#9733;&#9733;</option>
+          <option value="4">4 &#9733;&#9733;&#9733;&#9733;</option>
+          <option value="5">5 &#9733;&#9733;&#9733;&#9733;&#9733;</option>
+        </select>
+      </div>
+      <textarea name="comment" placeholder="Write your review..." class="bd-review-form__textarea"></textarea>
+      <button type="submit" class="bd-btn bd-btn--dark">Submit Review</button>
+    </form>
+  </div>
+  {% endif %}
+
+  <div class="bd-reviews__list" id="reviews-list">
+    {% for review in reviews %}
+    <div class="bd-review-card" id="review-{{ review.id }}">
+      <div class="bd-review-card__avatar">&#9679;</div>
+      <div class="bd-review-card__body">
+        <div class="bd-review-card__meta">
+          <a href="#" class="bd-review-card__username">{{ review.user.username }}</a>
+          <span class="bd-review-card__stars">
+            {% for i in "12345" %}
+              <span class="bd-star{% if forloop.counter <= review.star_rating %} filled{% endif %}">&#9733;</span>
+            {% endfor %}
+          </span>
+        </div>
+        <p class="bd-review-card__comment">{{ review.comment }}</p>
+        <button class="bd-read-more">Read more &#9660;</button>
+      </div>
+      <div class="bd-review-card__votes">
+        {% if user.is_authenticated %}
+          <button class="bd-vote-btn bd-vote-btn--up" id="like-btn-{{ review.id }}"
+                  onclick="castVote({{ review.id }}, 'like')">
+            &#9650; <span id="likes-{{ review.id }}">{{ review.like_count }}</span>
+          </button>
+          <button class="bd-vote-btn bd-vote-btn--down" id="dislike-btn-{{ review.id }}"
+                  onclick="castVote({{ review.id }}, 'dislike')">
+            &#9660; <span id="dislikes-{{ review.id }}">{{ review.dislike_count }}</span>
+          </button>
+        {% else %}
+          <span class="bd-vote-static">&#9650; {{ review.like_count }}</span>
+          <span class="bd-vote-static">&#9660; {{ review.dislike_count }}</span>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+      <p id="no-reviews" class="bd-no-reviews">No reviews yet. Be the first!</p>
+    {% endfor %}
+  </div>
+
+  <nav class="bd-pagination">
+    <button class="bd-page-btn bd-page-btn--nav">&#8592; PREV</button>
+    <button class="bd-page-btn bd-page-btn--active">1</button>
+    <button class="bd-page-btn">2</button>
+    <button class="bd-page-btn bd-page-btn--nav">LOAD MORE &#8594;</button>
+  </nav>
+
 </section>
+
+{% endblock %}
 
 {% block extra_js %}
 <script>
 const csrfToken = '{{ csrf_token }}';
+const userVotes = {{ user_votes_json|default:"{}" }};
 
-function ajaxPost(url, onSuccess) {
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': csrfToken,
-            'X-Requested-With': 'XMLHttpRequest',
-        },
-    }).then(r => r.json()).then(onSuccess);
-}
+document.addEventListener('DOMContentLoaded', () => {
+  // Restore active vote state
+  Object.entries(userVotes).forEach(([id, type]) => {
+    const btn = document.getElementById(`${type}-btn-${id}`);
+    if (btn) btn.classList.add('active');
+  });
 
 const userVotes = {{ user_votes_json }};
 document.addEventListener('DOMContentLoaded', () => {
@@ -198,33 +326,87 @@ document.querySelectorAll('form[action*="/add/"]').forEach(form => {
             }
         });
     });
+  });
 });
 
-const reviewForm = document.querySelector('form[action*="review"]');
-if (reviewForm) {
-    reviewForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        fetch(this.action, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken,
-                'X-Requested-With': 'XMLHttpRequest',
-            },
-            body: formData,
-        }).then(r => r.json()).then(data => {
-            if (data.success) {
-                const reviewsList = document.getElementById('reviews-list');
-                const noReviews = document.getElementById('no-reviews');
-                if (noReviews) noReviews.remove();
-                const div = document.createElement('div');
-                div.innerHTML = `<strong>${data.user}</strong> <span>${data.star_rating}/5</span><p>${data.comment}</p>`;
-                reviewsList.prepend(div);
-                reviewForm.reset();
-            }
-        });
+function castVote(reviewId, voteType) {
+  fetch(`/reviews/${reviewId}/vote/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': csrfToken,
+      'X-Requested-With': 'XMLHttpRequest',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: `vote_type=${voteType}`,
+  }).then(r => r.json()).then(data => {
+    document.getElementById(`likes-${reviewId}`).textContent    = data.likes;
+    document.getElementById(`dislikes-${reviewId}`).textContent = data.dislikes;
+    const card = document.getElementById(`review-${reviewId}`);
+    card.querySelectorAll('.bd-vote-btn').forEach(b => b.classList.remove('active'));
+    if (data.user_vote) {
+      const idx = data.user_vote === 'like' ? 0 : 1;
+      card.querySelectorAll('.bd-vote-btn')[idx].classList.add('active');
+    }
+  });
+}
+
+function ajaxPost(url, onSuccess) {
+  fetch(url, {
+    method: 'POST',
+    headers: { 'X-CSRFToken': csrfToken, 'X-Requested-With': 'XMLHttpRequest' },
+  }).then(r => r.json()).then(onSuccess);
+}
+
+
+document.querySelectorAll('form[action*="/add/"]').forEach(form => {
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    ajaxPost(this.action, data => {
+      if (data.success) {
+        const btn = this.querySelector('button');
+        btn.textContent = 'Added \u2713';
+        btn.disabled = true;
+      }
     });
+  });
+});
+
+const reviewForm = document.getElementById('review-form');
+if (reviewForm) {
+  reviewForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    fetch(this.action, {
+      method: 'POST',
+      headers: { 'X-CSRFToken': csrfToken, 'X-Requested-With': 'XMLHttpRequest' },
+      body: new FormData(this),
+    }).then(r => r.json()).then(data => {
+      if (data.success) {
+        const list = document.getElementById('reviews-list');
+        const noReviews = document.getElementById('no-reviews');
+        if (noReviews) noReviews.remove();
+        const stars = '\u2605'.repeat(parseInt(data.star_rating)) + '\u2606'.repeat(5 - parseInt(data.star_rating));
+        const card = document.createElement('div');
+        card.className = 'bd-review-card';
+        card.innerHTML = `
+          <div class="bd-review-card__avatar">&#9679;</div>
+          <div class="bd-review-card__body">
+            <div class="bd-review-card__meta">
+              <a href="#" class="bd-review-card__username">${data.user}</a>
+              <span class="bd-review-card__stars">${stars}</span>
+            </div>
+            <p class="bd-review-card__comment">${data.comment}</p>
+            <button class="bd-read-more">Read more &#9660;</button>
+          </div>
+          <div class="bd-review-card__votes">
+            <span class="bd-vote-static">&#9650; 0</span>
+            <span class="bd-vote-static">&#9660; 0</span>
+          </div>`;
+        list.prepend(card);
+        reviewForm.reset();
+        document.getElementById('review-form-panel').classList.remove('open');
+      }
+    });
+  });
 }
 </script>
-{% endblock %}
 {% endblock %}

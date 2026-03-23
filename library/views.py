@@ -125,11 +125,14 @@ def book_detail_view(request, isbn):
     user_lists = BookList.objects.filter(user=request.user) if request.user.is_authenticated else []
 
     user_votes = {}
+    is_read = False
     if request.user.is_authenticated:
         user_votes = {
             v.review_id: v.vote_type
             for v in Vote.objects.filter(review__book=book, user=request.user)
         }
+        read_list = BookList.objects.filter(user=request.user, list_type='read').first()
+        is_read = read_list.books.filter(isbn=book.isbn).exists() if read_list else False
 
     return render(request, 'library/book_detail.html', {
         'book': book,
@@ -140,6 +143,7 @@ def book_detail_view(request, isbn):
         'current_sort': sort,
         'user_votes': user_votes,
         'user_votes_json': json.dumps({str(k): v for k, v in user_votes.items()}),
+        'is_read': is_read,
     })
 
 
