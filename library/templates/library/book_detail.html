@@ -67,20 +67,27 @@
 <section>
     <h2>Reviews</h2>
     {% if user.is_authenticated %}
-        <a href="#">+ Add Your Review</a>
+    <form method="POST" action="{% url 'library:add_review' book.isbn %}">
+        {% csrf_token %}
+        <label>Rating</label>
+        <select name="rating">
+                <option value="1">1 ★</option>
+                <option value="2">2 ★★</option>
+                <option value="3">3 ★★★</option>
+                <option value="4">4 ★★★★</option>
+                <option value="5">5 ★★★★★</option>
+        </select>       
+        <label>Comment</label>
+        <textarea name="comment" placeholder="Write your review..."></textarea>
+        <button type="submit">Submit Review</button>
+        </form>
     {% endif %}
-    <label for="sort-reviews">Sort:</label>
-    <select id="sort-reviews" name="sort">
-        <option value="newest">Newest</option>
-        <option value="highest">Highest Rated</option>
-        <option value="lowest">Lowest Rated</option>
-    </select>
 
     {% for review in reviews %}
     <div>
-    <strong>{{ review.searcher }}</strong>
-    <span>{{ review.rating }}/5</span>
-    <p>{{ review.body }}</p>
+    <strong>{{ review.user.username }}</strong>
+    <span>{{ review.star_rating }}/5</span>
+    <p>{{ review.comment }}</p>
     </div>
     {% empty %}
         <p>No reviews yet.</p>

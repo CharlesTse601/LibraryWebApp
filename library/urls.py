@@ -17,6 +17,7 @@ urlpatterns = [
     path('categories/', views.category_list_view, name='categories'),
     path('categories/<str:category_name>/', views.category_detail_view, name='category_detail'),
     path('categories/<str:category_name>/<str:book_isbn>/', views.book_detail_view, name='book_detail'),
+    path('books/<str:book_isbn>/add-review/', views.add_review, name='add_review'),
     path('recentlypublished/', views.recently_published_view, name='recently_published'),
     path('aboutus/', views.about_us_view, name='about_us'),
     path('FAQ/', views.faq_view, name='faq'),

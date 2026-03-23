@@ -123,14 +123,15 @@ def add_review(request, book_isbn):
         star_rating = request.POST.get('star_rating')
         comment = request.POST.get('comment')
 
-        Review.objects.create(
-            book=book,
-            user=request.user,
-            star_rating=star_rating,
-            comment=comment,
+        if (star_rating and comment):
+                Review.objects.create(
+                book=book,
+                user=request.user,
+                star_rating=star_rating,
+                comment=comment,
         )
 
-    return redirect('book_detail', book_isbn=book_isbn)
+    return redirect(f'/books/{book_isbn}/')
 
 
 
