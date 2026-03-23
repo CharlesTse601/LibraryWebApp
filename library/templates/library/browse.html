@@ -1,49 +1,109 @@
 {% extends 'library/base.html' %}
-
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/browse.css' %}">
+{% endblock %}
 {% block title %}Browse — LibraryWebApp{% endblock %}
-
 {% block content %}
-<h1>Browse</h1>
 
-<section>
-    <h2>Find any Book... In one place.</h2>
-    <form method="GET" action="{% url 'library:search' %}">
-        <input type="text" name="q" placeholder="Search by title, author, or ISBN...">
-        <button type="submit">Search</button>
-    </form>
+<section class="hero">
+  <h2>Find any Book... In one place.</h2>
+  <form class="hero-search" method="GET" action="{% url 'library:search' %}">
+    <input type="text" name="q" placeholder="Search by title, author, or ISBN...">
+    <button type="submit">🔍</button>
+  </form>
 </section>
 
-<section>
+<section class="categories-section">
     <h2>This week's hottest Categories!</h2>
+    <div class="categories-grid">
     {% for category in top_categories %}
-    <div class="top_categories">
-        <span>#{{ forloop.counter }}</span>
-        <p>{{ category.category_name}}</p>
-    </div>
-    {% endfor %}
+        <a href="{% url 'library:category_detail' category.category_name %}" class="cat-tile">
+        <span>📚</span> {{ category.category_name }}
+        </a>
     
-    <a href="{% url 'library:categories' %}">Want to see all we have? Click here</a>
+    {% endfor %}
+    </div>
+    
+    <p class="see-all"><a href="{% url 'library:categories' %}">Want to see all we have? Click here</a></p>
 </section>
 
-<section>
+<section class="hot-section">
     <h2>Check out what's Hot!</h2>
-    {% for book in hot_books %}
-    <div class="book-card">
-        <span>#{{ forloop.counter }}</span>
-        <img src="{{ book.cover_image_url }}" alt="{{ book.title }}">
-        <p>{{ book.title }}</p>
-        {% if book.avg_rating %}
-            <p>{{ book.avg_rating|floatformat:1 }} / 5 ({{ book.review_count }} reviews)</p>
-        {% else %}
-            <p> No reviews yet</p>
-        {% endif %}
-        <a href="{% url 'library:book_detail' book.isbn %}">View</a>
-        <form method="POST" action="/lists/add/">
-        {% csrf_token %}
-        <input type="hidden" name="book_isbn" value="{{ book.isbn }}">
-        <button type="submit">+ Add to My List</button>
-        </form>
+    <div class="hot-scroll">
+        <div class="hot-grid">
+        {% for book in hot_books %}
+        <div class="book-card">
+        <div class="book-card__rank">#{{ forloop.counter }}</div>
+        <img class="book-card__cover" src="{{ book.cover_image_url }}" alt="{{ book.title }}">
+        <div class="book-card__info">
+          <p class="book-card__title">{{ book.title }}</p>
+          <div class="book-card__actions">
+            <a href="{% url 'library:book_detail' book.isbn %}" class="btn-view">View</a>
+            <button class="btn-add" onclick="openModal('{{ book.isbn }}')">+ Add to My List</button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
     </div>
-{% endfor %}
+  </div>
 </section>
+<div id="list-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
+  <div style="background:white; max-width:400px; margin:10% auto; padding:2rem; border-radius:8px;">
+    <h3>Add to List</h3>
+    <form id="modal-form" method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="book_isbn" id="modal-isbn">
+      {% for list in user_lists %}
+        <button type="submit" formaction="{% url 'library:add_to_list' list.id 'PLACEHOLDER' %}" 
+                onclick="setIsbn(this, '{{ list.id }}')">
+          {{ list.list_name }}
+        </button>
+      {% endfor %}
+      <hr>
+      <input type="text" id="new-list-name" placeholder="New list name...">
+      <button type="button" onclick="createAndAdd()">+ Create & Add</button>
+    </form>
+    <button onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+<script>
+{% if user.is_authenticated %}
+function openModal(isbn) {
+    document.getElementById('modal-isbn').value = isbn;
+    document.getElementById('list-modal').style.display = 'block';
+}
+{% else %}
+function openModal(isbn) {
+    window.location.href = "{% url 'library:login' %}";
+}
+{% endif %}
+
+function closeModal() {
+  document.getElementById('list-modal').style.display = 'none';
+}
+
+function setIsbn(btn, listId) {
+  const isbn = document.getElementById('modal-isbn').value;
+  btn.formAction = `/lists/${listId}/add/${isbn}/`;
+}
+
+function createAndAdd() {
+  const isbn = document.getElementById('modal-isbn').value;
+  const listName = document.getElementById('new-list-name').value;
+  if (!listName) return;
+  
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = `/lists/create/${isbn}/`;
+  
+  const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  form.innerHTML = `<input type="hidden" name="csrfmiddlewaretoken" value="${csrf}">
+                    <input type="hidden" name="list_name" value="${listName}">`;
+  document.body.appendChild(form);
+  form.submit();
+}
+</script>
+>>>>>>> Styling
 {% endblock %}

@@ -1,0 +1,146 @@
+
+  body { margin: 0; }
+
+  #login-page {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  #login-left {
+    width: 45%;
+    background: #111;
+    color: white;
+    padding: 4rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  #login-tagline {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    line-height: 1.2;
+  }
+
+  #login-testimonials {
+    list-style: none;
+    padding: 0;
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  #login-testimonials li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .testimonial-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #444;
+    flex-shrink: 0;
+  }
+
+  #login-testimonials strong {
+    display: block;
+    font-size: 0.9rem;
+  }
+
+  #login-testimonials span {
+    display: block;
+    font-size: 0.75rem;
+    color: #aaa;
+  }
+
+  #login-right {
+    width: 55%;
+    background: white;
+    padding: 4rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: #111;
+  }
+
+  #login-tabs {
+    display: flex;
+    margin-bottom: 2rem;
+  }
+
+  #login-tabs .tab-btn {
+  flex: 1;
+  padding: 0.75rem;
+  text-align: center;
+  border: 2px solid #111;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #111;
+  background: white;
+}
+
+#login-tabs .tab-btn.active {
+  background: #111;
+  color: white;
+}
+
+#login-tabs .tab-btn:hover {
+  background: #333;
+  color: white;
+}
+
+  .form-label {
+    display: block;
+    font-style: italic;
+    margin-bottom: 0.3rem;
+    margin-top: 1rem;
+    color: #333;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    background: #f0f0f0;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+  }
+
+  #login-right .role-btn {
+  padding: 0.75rem 2rem;
+  border: 2px solid #111;
+  background: white;
+  color: #111;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+#login-right .role-btn.active {
+  background: #111;
+  color: white;
+}
+
+#login-right .role-btn:hover {
+  background: #333;
+  color: white;
+}
+
+  .submit-btn {
+    width: 100%;
+    padding: 1rem;
+    background: #111;
+    color: white;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1.5rem;
+  }
+
+  .submit-btn:hover { background: #333; }

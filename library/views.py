@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required 
 from django.contrib import messages 
 from django.contrib.auth import login , logout , authenticate, update_session_auth_hash
@@ -18,10 +19,12 @@ def browse_view(request):
     hot_books = Book.objects.annotate(
         avg_rating=Avg('review__star_rating')
     ).order_by('-avg_rating')[:10]
+    user_lists = BookList.objects.filter(user=request.user) if request.user.is_authenticated else []
 
     return render(request, 'library/browse.html', {
         'top_categories': top_categories,
         'hot_books': hot_books,
+        'user_lists':user_lists,
     })
 
 
@@ -131,7 +134,19 @@ def add_review(request, book_isbn):
                 comment=comment,
         )
 
+<<<<<<< HEAD
     return redirect(f'/books/{book_isbn}/')
+=======
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'user': request.user.username,
+                'star_rating': star_rating,
+                'comment': comment,
+            })
+
+    return redirect('library:book_detail', isbn=book_isbn)
+>>>>>>> 2e66cce06b69862adba2589a33f57b60aa18b52d
 
 
 
@@ -215,6 +230,8 @@ def add_to_list(request, list_id, book_isbn):
     book = get_object_or_404(Book, isbn=book_isbn)
     book_list.books.add(book)
 
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'success': True})
     return redirect(request.META.get('HTTP_REFERER', 'browse'))
 
 @login_required
@@ -238,6 +255,8 @@ def mark_as_read(request, book_isbn):
     )
     read_list.books.add(book)
 
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'success': True})
     return redirect(request.META.get('HTTP_REFERER', 'browse'))
 
 def recently_published_view(request):
@@ -284,10 +303,9 @@ def user_login_view(request):
             if User.objects.filter(email=email).exists():
                 messages.error(request, 'Email already registered.')
                 return redirect(f"{reverse('library:login')}?tab=register")
-            if avatar: 
-                user.avatar = avatar 
-            
             user = User.objects.create_user(username=username, email=email, password=password1)
+            if avatar:
+                user.avatar = avatar
             user.role = role
             user.save()
             login(request, user)
@@ -311,10 +329,20 @@ def user_logout_view(request):
     logout(request)
     return redirect('library:browse')
 
+@login_required
 def my_books_view(request):
     lists = BookList.objects.filter(user=request.user)
-    read_history = lists.filter(list_type='read').first()
-    return render(request, 'library/my_books.html', {'lists': lists,'read_history':read_history})
+    selected_id = request.GET.get('list')
+    if selected_id:
+        active_list = get_object_or_404(BookList, id=selected_id, user=request.user)
+    else:
+        active_list = lists.filter(list_type='read').first()
+    books = active_list.books.all() if active_list else []
+    return render(request, 'library/my_books.html', {
+        'lists': lists,
+        'active_list': active_list,
+        'books': books,
+    })
 @login_required
 def edit_profile_view(request):
     if request.method == 'POST':
@@ -345,10 +373,3 @@ def edit_profile_view(request):
 
     return render(request, 'library/edit_profile.html')
 
-def book_detail(request, isbn):
-        book = get_object_or_404(Book, isbn=isbn)
-        reviews = book.review_set.all().order_by('-created_at')
-        return render(request, 'book_detail.html', {
-            'book': book,
-            'reviews': reviews,
-    })

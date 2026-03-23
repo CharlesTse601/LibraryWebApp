@@ -9,47 +9,39 @@
 </p>
 
 <h1>My Books</h1>
- {% for book in read_history.books.all %}
-            <p>{{ book.title }}</p>
-            <p>{{ book.author }}</p>
-            <a href="{% url 'library:book_detail' book.isbn %}">View</a>
-        {% empty %}
-            <p>No books read yet.</p>
-{% endfor %}
-
 
 <div>
     <nav>
         <h2>My Lists</h2>
-        <a href="#">Read History</a>
-        <a href="#">Wishlist</a>
-        <a href="#">+ Add New List</a>
+        {% for list in lists %}
+            <a href="?list={{ list.id }}">{{ list.list_name }}</a>
+        {% empty %}
+            <p>No lists yet.</p>
+        {% endfor %}
     </nav>
 
     <section>
-        <nav>
-            <a href="?view=history">Read History</a>
-            <a href="?view=wishlist">Wishlist</a>
-        </nav>
-
-        <form method="GET">
-            <input type="text" name="q" placeholder="Search list...">
-        </form>
-        <select name="sort">
-            <option value="date">Date Added</option>
-            <option value="title">Title</option>
-            <option value="rating">Rating</option>
-        </select>
-
-        <p>Book rows (thumbnail, title, author, date, star rating, VIEW and REMOVE buttons)
-           will be rendered here from the database.</p>
-
-        <nav>
-            <span>PREV</span>
-            <span>1</span>
-            <span>2</span>
-            <span>NEXT</span>
-        </nav>
+        {% if active_list %}
+            <h2>{{ active_list.list_name }}</h2>
+            {% for book in books %}
+            <div>
+                {% if book.cover_image_url %}
+                    <img src="{{ book.cover_image_url }}" alt="{{ book.title }}">
+                {% endif %}
+                <h3>{{ book.title }}</h3>
+                <p>{{ book.author }}</p>
+                <a href="{% url 'library:book_detail' book.isbn %}">View</a>
+                <form method="POST" action="{% url 'library:remove_book_from_list' active_list.id book.isbn %}">
+                    {% csrf_token %}
+                    <button type="submit">Remove</button>
+                </form>
+            </div>
+            {% empty %}
+                <p>No books in this list yet.</p>
+            {% endfor %}
+        {% else %}
+            <p>Select a list from the left.</p>
+        {% endif %}
     </section>
 </div>
 {% endblock %}

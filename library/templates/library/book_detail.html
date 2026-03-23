@@ -54,7 +54,6 @@
             </form>
         {% endif %}
 
-        <p>Category rank: Number x for the Category: CategoryName</p>
     </div>
 
     <aside>
@@ -69,6 +68,7 @@
     {% if user.is_authenticated %}
     <form method="POST" action="{% url 'library:add_review' book.isbn %}">
         {% csrf_token %}
+<<<<<<< HEAD
         <label>Rating</label>
         <select name="rating">
                 <option value="1">1 ★</option>
@@ -81,17 +81,39 @@
         <textarea name="comment" placeholder="Write your review..."></textarea>
         <button type="submit">Submit Review</button>
         </form>
+=======
+        <label>Rating (1-5)</label>
+        <select name="star_rating">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+        <label>Comment</label>
+        <textarea name="comment" placeholder="Write your review..."></textarea>
+        <button type="submit">Submit Review</button>
+    </form>
+>>>>>>> 2e66cce06b69862adba2589a33f57b60aa18b52d
     {% endif %}
 
+    <div id="reviews-list">
     {% for review in reviews %}
     <div>
+<<<<<<< HEAD
     <strong>{{ review.user.username }}</strong>
     <span>{{ review.star_rating }}/5</span>
     <p>{{ review.comment }}</p>
+=======
+        <strong>{{ review.user }}</strong>
+        <span>{{ review.star_rating }}/5</span>
+        <p>{{ review.comment }}</p>
+>>>>>>> 2e66cce06b69862adba2589a33f57b60aa18b52d
     </div>
     {% empty %}
-        <p>No reviews yet.</p>
+        <p id="no-reviews">No reviews yet.</p>
     {% endfor %}
+    </div>
 
     <nav>
         <span>PREV</span>
@@ -100,4 +122,73 @@
         <span>LOAD MORE</span>
     </nav>
 </section>
+
+{% block extra_js %}
+<script>
+const csrfToken = '{{ csrf_token }}';
+
+function ajaxPost(url, onSuccess) {
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+    }).then(r => r.json()).then(onSuccess);
+}
+
+const markAsReadForm = document.querySelector('form[action*="mark-as-read"]');
+if (markAsReadForm) {
+    markAsReadForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        ajaxPost(this.action, data => {
+            if (data.success) {
+                const btn = this.querySelector('button');
+                btn.textContent = 'Read ✓';
+                btn.disabled = true;
+            }
+        });
+    });
+}
+
+document.querySelectorAll('form[action*="/add/"]').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        ajaxPost(this.action, data => {
+            if (data.success) {
+                const btn = this.querySelector('button');
+                btn.textContent = 'Added ✓';
+                btn.disabled = true;
+            }
+        });
+    });
+});
+
+const reviewForm = document.querySelector('form[action*="review"]');
+if (reviewForm) {
+    reviewForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        fetch(this.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: formData,
+        }).then(r => r.json()).then(data => {
+            if (data.success) {
+                const reviewsList = document.getElementById('reviews-list');
+                const noReviews = document.getElementById('no-reviews');
+                if (noReviews) noReviews.remove();
+                const div = document.createElement('div');
+                div.innerHTML = `<strong>${data.user}</strong> <span>${data.star_rating}/5</span><p>${data.comment}</p>`;
+                reviewsList.prepend(div);
+                reviewForm.reset();
+            }
+        });
+    });
+}
+</script>
+{% endblock %}
 {% endblock %}
