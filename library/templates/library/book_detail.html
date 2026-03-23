@@ -68,7 +68,6 @@
     {% if user.is_authenticated %}
     <form method="POST" action="{% url 'library:add_review' book.isbn %}">
         {% csrf_token %}
-<<<<<<< HEAD
         <label>Rating</label>
         <select name="rating">
                 <option value="1">1 ★</option>
@@ -81,34 +80,41 @@
         <textarea name="comment" placeholder="Write your review..."></textarea>
         <button type="submit">Submit Review</button>
         </form>
-=======
-        <label>Rating (1-5)</label>
-        <select name="star_rating">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-        </select>
-        <label>Comment</label>
-        <textarea name="comment" placeholder="Write your review..."></textarea>
-        <button type="submit">Submit Review</button>
-    </form>
->>>>>>> 2e66cce06b69862adba2589a33f57b60aa18b52d
     {% endif %}
+
+    <form method="GET" id="sort-form">
+        <label for="sort-select">Sort by:</label>
+        <select name="sort" id="sort-select" onchange="document.getElementById('sort-form').submit()">
+            <option value="date_new"      {% if current_sort == 'date_new'      %}selected{% endif %}>Newest first</option>
+            <option value="date_old"      {% if current_sort == 'date_old'      %}selected{% endif %}>Oldest first</option>
+            <option value="rating_high"   {% if current_sort == 'rating_high'   %}selected{% endif %}>Highest rating</option>
+            <option value="rating_low"    {% if current_sort == 'rating_low'    %}selected{% endif %}>Lowest rating</option>
+            <option value="most_liked"    {% if current_sort == 'most_liked'    %}selected{% endif %}>Most upvoted</option>
+            <option value="most_disliked" {% if current_sort == 'most_disliked' %}selected{% endif %}>Most downvoted</option>
+        </select>
+    </form>
 
     <div id="reviews-list">
     {% for review in reviews %}
-    <div>
-<<<<<<< HEAD
-    <strong>{{ review.user.username }}</strong>
-    <span>{{ review.star_rating }}/5</span>
-    <p>{{ review.comment }}</p>
-=======
-        <strong>{{ review.user }}</strong>
+    <div id="review-{{ review.id }}">
+        <strong>{{ review.user.username }}</strong>
         <span>{{ review.star_rating }}/5</span>
         <p>{{ review.comment }}</p>
->>>>>>> 2e66cce06b69862adba2589a33f57b60aa18b52d
+        <div class="vote-controls">
+            {% if user.is_authenticated %}
+            <button class="vote-btn" id="like-btn-{{ review.id }}"
+                    onclick="castVote({{ review.id }}, 'like')">
+                ▲ <span id="likes-{{ review.id }}">{{ review.like_count }}</span>
+            </button>
+            <button class="vote-btn" id="dislike-btn-{{ review.id }}"
+                    onclick="castVote({{ review.id }}, 'dislike')">
+                ▼ <span id="dislikes-{{ review.id }}">{{ review.dislike_count }}</span>
+            </button>
+            {% else %}
+            <span>▲ {{ review.like_count }}</span>
+            <span>▼ {{ review.dislike_count }}</span>
+            {% endif %}
+        </div>
     </div>
     {% empty %}
         <p id="no-reviews">No reviews yet.</p>
@@ -135,6 +141,36 @@ function ajaxPost(url, onSuccess) {
             'X-Requested-With': 'XMLHttpRequest',
         },
     }).then(r => r.json()).then(onSuccess);
+}
+
+const userVotes = {{ user_votes_json }};
+document.addEventListener('DOMContentLoaded', () => {
+    Object.entries(userVotes).forEach(([id, type]) => {
+        const btn = document.getElementById(`${type}-btn-${id}`);
+        if (btn) btn.classList.add('active');
+    });
+});
+
+function castVote(reviewId, voteType) {
+    fetch(`/reviews/${reviewId}/vote/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `vote_type=${voteType}`,
+    }).then(r => r.json()).then(data => {
+        document.getElementById(`likes-${reviewId}`).textContent    = data.likes;
+        document.getElementById(`dislikes-${reviewId}`).textContent = data.dislikes;
+
+        const card = document.getElementById(`review-${reviewId}`);
+        card.querySelectorAll('.vote-btn').forEach(btn => btn.classList.remove('active'));
+        if (data.user_vote) {
+            const idx = data.user_vote === 'like' ? 0 : 1;
+            card.querySelectorAll('.vote-btn')[idx].classList.add('active');
+        }
+    });
 }
 
 const markAsReadForm = document.querySelector('form[action*="mark-as-read"]');

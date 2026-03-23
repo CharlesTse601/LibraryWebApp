@@ -16,13 +16,8 @@ urlpatterns = [
     path('lists/delete/<int:list_id>/', views.remove_list , name ='remove_list' ),
     path('categories/', views.category_list_view, name='categories'),
     path('categories/<str:category_name>/', views.category_detail_view, name='category_detail'),
-<<<<<<< HEAD
-    path('categories/<str:category_name>/<str:book_isbn>/', views.book_detail_view, name='book_detail'),
     path('books/<str:book_isbn>/add-review/', views.add_review, name='add_review'),
-=======
-    path('books/<str:book_isbn>/review/', views.add_review, name='add_review'),
     path('reviews/<int:review_id>/vote/', views.vote_review, name='vote_review'),
->>>>>>> 2e66cce06b69862adba2589a33f57b60aa18b52d
     path('recentlypublished/', views.recently_published_view, name='recently_published'),
     path('aboutus/', views.about_us_view, name='about_us'),
     path('FAQ/', views.faq_view, name='faq'),
