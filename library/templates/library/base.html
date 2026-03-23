@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}LibraryWebApp{% endblock %}</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -17,10 +17,14 @@
     <a href="{% url 'library:search' %}">Search</a>
     <a href="{% url 'library:about_us' %}">About Us</a>
     {% if user.is_authenticated %}
-        <a href="{% url 'library:profile' %}">{{ user.username }}</a>
-        <a href="{% url 'library:my_books' %}">My Lists</a>
-        <a href="{% url 'library:logout' %}">Logout</a>
-         <img src="{{ user.avatar.url }}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">"
+        {% if user.avatar %}
+        <img src="{{ user.avatar.url }}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
+        {% else %}
+        <img src="{% static 'images/User/default_profile_picture.jpg' %}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
+    {% endif %}
+    <a href="{% url 'library:profile' %}">{{ user.username }}</a>
+    <a href="{% url 'library:my_books' %}">My Lists</a>
+    <a href="{% url 'library:logout' %}">Logout</a>
     {% else %}
         <a href="{% url 'library:login' %}">Login</a>
         <a href="{% url 'library:login' %}?tab=register">Register</a>

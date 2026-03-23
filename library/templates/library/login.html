@@ -1,22 +1,47 @@
 {% extends 'library/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
 
 {% block title %}{% if active_tab == 'register' %}Register{% else %}Login{% endif %} — LibraryWebApp{% endblock %}
 
 {% block content %}
-<div>
-    <div>
-        <h2>Find any Book... In one place.</h2>
-        <ul>
-            <li>"Positive review" — Name Lastname</li>
-            <li>"Positive review" — John the Unknown</li>
-            <li>"Positive review" — Jane Doe</li>
-        </ul>
+<div id="login-page">
+    <div id ="login-left">
+    <ul id="login-testimonials">
+    <li>
+        <div class="testimonial-avatar"></div>
+      <div>
+        <strong>Name Lastname</strong>
+        <span>Company name</span>
+        <p>Positive review</p>
+      </div>
+    </li>
+    <li>
+      <div class="testimonial-avatar"></div>
+      <div>
+        <strong>John the Unknown</strong>
+        <span>Company name</span>
+        <p>Positive review</p>
+      </div>
+    </li>
+    <li>
+      <div class="testimonial-avatar"></div>
+      <div>
+        <strong>Jane Doe</strong>
+        <span>Company name</span>
+        <p>Positive review</p>
+      </div>
+    </li>
+    </ul>
     </div>
 
-    <div>
-        <nav>
-            <a href="{% url 'library:login' %}?tab=login">LOGIN</a>
-            <a href="{% url 'library:login' %}?tab=register">REGISTER</a>
+    <div id= "login-right">
+        <nav id="login-tabs">
+             <a href="?tab=login" class="tab-btn {% if active_tab != 'register' %}active{% endif %}">LOGIN</a>
+             <a href="?tab=register" class="tab-btn {% if active_tab == 'register' %}active{% endif %}">REGISTER</a>
         </nav>
         
 
@@ -29,25 +54,25 @@
             {% csrf_token %}
             <input type="hidden" name="form_type" value="register">
 
-            <label for="reg_username">Username</label>
-            <input type="text" id="reg_username" name="username" placeholder="Choose a username">
+            <label class="form-label" for="reg_username">Username</label>
+            <input  class="form-input" type="text" id="reg_username" name="username" placeholder="Choose a username">
 
-            <label for="reg_email">Email Address</label>
-            <input type="email" id="reg_email" name="email" placeholder="your@email.com">
+            <label class="form-label" for="reg_email">Email Address</label>
+            <input class="form-input" type="email" id="reg_email" name="email" placeholder="your@email.com">
 
-            <label for="reg_password1">Password</label>
-            <input type="password" id="reg_password1" name="password1" placeholder="*******">
+            <label class="form-label" for="reg_password1">Password</label>
+            <input class="form-input" type="password" id="reg_password1" name="password1" placeholder="*******">
 
-            <label for="reg_password2">Confirm Password</label>
-            <input type="password" id="reg_password2" name="password2" placeholder="*******">
+            <label class="form-label" for="reg_password2">Confirm Password</label>
+            <input class="form-input" type="password" id="reg_password2" name="password2" placeholder="*******">
             
-            <label for="avatar">Profile Picture (optional)</label>
-            <input type="file" id="avatar" name="avatar" accept="image/*">
+            <label  class="form-label"for="avatar">Profile Picture (optional)</label>
+            <input class="form-input" type="file" id="avatar" name="avatar" accept="image/*">
 
-            <label>Role</label>
+            <label class="form-label" >Role</label>
             <div>
-                <button type="radio" name="role" value="student" checked >Student</button>
-                <button type="radio" name="role" value="admin">Admin</button>
+                <button class="role-btn" type="radio" name="role" value="student" checked >Student</button>
+                <button class="role-btn" type="radio" name="role" value="admin">Admin</button>
             </div>
 
             <button type="submit">Create Account</button>
@@ -59,23 +84,31 @@
             {% csrf_token %}
             <input type="hidden" name="form_type" value="login">
 
-            <label for="username">Username / Email Address</label>
-            <input type="text" id="username" name="username" placeholder="JohnSmith@gmail.com">
+            <label  class="form-label" for="username">Username / Email Address</label>
+            <input class="form-input" type="text" id="username" name="username" placeholder="JohnSmith@gmail.com">
 
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="*******">
+            <label class="form-label" for="password">Password</label>
+            <input class="form-input" type="password" id="password" name="password" placeholder="*******">
 
-            <label>Role</label>
+            <label class="form-label" >Role</label>
             <div>
-                <button type="button" name="role" value="student">Student</button>
-                <button type="button" name="role" value="admin">Admin</button>
+                <button class="role-btn" type="button" name="role" value="student">Student</button>
+                <button class="role-btn" type="button" name="role" value="admin">Admin</button>
             </div>
 
-            <button type="submit">Login</button>
+            <button class="submit-btn"  type="submit">Login</button>
         </form>
         <a href="#">Forgot your password? Reset it here</a>
         <p>No account yet? <a href="{% url 'library:login' %}?tab=register">Register here</a></p>
         {% endif %}
     </div>
 </div>
+<script>
+  document.querySelectorAll('.role-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+</script>
 {% endblock %}
