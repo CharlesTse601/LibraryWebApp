@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required 
@@ -103,17 +104,46 @@ def category_detail_view(request, category_name):
 
 def book_detail_view(request, isbn):
     book = get_object_or_404(Book, isbn=isbn)
-    reviews = Review.objects.filter(book=book).order_by('-date_of_review')
+    reviews = Review.objects.filter(book=book).annotate(
+        like_count=Count('vote', filter=Q(vote__vote_type='like')),
+        dislike_count=Count('vote', filter=Q(vote__vote_type='dislike')),
+    )
     avg_rating = reviews.aggregate(Avg('star_rating'))['star_rating__avg']
     review_count = reviews.count()
+
+    sort = request.GET.get('sort', 'date_new')
+    sort_options = {
+        'date_new':      '-date_of_review',
+        'date_old':       'date_of_review',
+        'rating_high':   '-star_rating',
+        'rating_low':     'star_rating',
+        'most_liked':    '-like_count',
+        'most_disliked': '-dislike_count',
+    }
+    reviews = reviews.order_by(sort_options.get(sort, '-date_of_review'))
+
     user_lists = BookList.objects.filter(user=request.user) if request.user.is_authenticated else []
+
+    user_votes = {}
+    is_read = False
+    if request.user.is_authenticated:
+        user_votes = {
+            v.review_id: v.vote_type
+            for v in Vote.objects.filter(review__book=book, user=request.user)
+        }
+        read_list = BookList.objects.filter(user=request.user, list_type='read').first()
+        is_read = read_list.books.filter(isbn=book.isbn).exists() if read_list else False
 
     return render(request, 'library/book_detail.html', {
         'book': book,
         'reviews': reviews,
         'avg_rating': avg_rating,
-        'review_count':review_count, 
-        'user_lists':user_lists ,
+        'review_count': review_count,
+        'user_lists': user_lists,
+        'current_sort': sort,
+        'user_votes': user_votes,
+        'user_votes_json': json.dumps({str(k): v for k, v in user_votes.items()}),
+        'is_read': is_read,
     })
 
 
