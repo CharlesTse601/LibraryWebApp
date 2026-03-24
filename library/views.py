@@ -1,10 +1,11 @@
+import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required 
-from django.contrib import messages 
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.contrib.auth import login , logout , authenticate, update_session_auth_hash
 from django.db.models import Avg, Count,Q
-from django.urls import reverse 
+from django.urls import reverse
 from .models import Book, Category, BookList, Review, Vote, User
 
 
@@ -103,17 +104,46 @@ def category_detail_view(request, category_name):
 
 def book_detail_view(request, isbn):
     book = get_object_or_404(Book, isbn=isbn)
-    reviews = Review.objects.filter(book=book).order_by('-date_of_review')
+    reviews = Review.objects.filter(book=book).annotate(
+        like_count=Count('vote', filter=Q(vote__vote_type='like')),
+        dislike_count=Count('vote', filter=Q(vote__vote_type='dislike')),
+    )
     avg_rating = reviews.aggregate(Avg('star_rating'))['star_rating__avg']
     review_count = reviews.count()
+
+    sort = request.GET.get('sort', 'date_new')
+    sort_options = {
+        'date_new':       '-date_of_review',
+        'date_old':        'date_of_review',
+        'rating_high':    '-star_rating',
+        'rating_low':      'star_rating',
+        'most_liked':     '-like_count',
+        'most_disliked':  '-dislike_count',
+    }
+    reviews = reviews.order_by(sort_options.get(sort, '-date_of_review'))
+
     user_lists = BookList.objects.filter(user=request.user) if request.user.is_authenticated else []
+
+    user_votes = {}
+    is_read = False
+    if request.user.is_authenticated:
+        user_votes = {
+            v.review_id: v.vote_type
+            for v in Vote.objects.filter(review__book=book, user=request.user)
+        }
+        read_list = BookList.objects.filter(user=request.user, list_type='read').first()
+        is_read = read_list.books.filter(isbn=book.isbn).exists() if read_list else False
 
     return render(request, 'library/book_detail.html', {
         'book': book,
         'reviews': reviews,
         'avg_rating': avg_rating,
-        'review_count':review_count, 
-        'user_lists':user_lists ,
+        'review_count': review_count,
+        'user_lists': user_lists,
+        'current_sort': sort,
+        'user_votes': user_votes,
+        'user_votes_json': json.dumps({str(k): v for k, v in user_votes.items()}),
+        'is_read': is_read,
     })
 
 
@@ -126,11 +156,12 @@ def add_review(request, book_isbn):
         star_rating = request.POST.get('star_rating')
         comment = request.POST.get('comment')
 
-        Review.objects.create(
-            book=book,
-            user=request.user,
-            star_rating=star_rating,
-            comment=comment,
+        if (star_rating and comment):
+                Review.objects.create(
+                book=book,
+                user=request.user,
+                star_rating=star_rating,
+                comment=comment,
         )
 
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -150,16 +181,24 @@ def vote_review(request, review_id):
     review = get_object_or_404(Review, id=review_id)
     vote_type = request.POST.get('vote_type')  # 'like' or 'dislike'
 
-    # Check if user already voted — update if so, create if not
-    vote, created = Vote.objects.get_or_create(
-        review=review,
-        user=request.user,
-        defaults={'vote_type': vote_type}
-    )
+    existing = Vote.objects.filter(review=review, user=request.user).first()
+    if existing:
+        if existing.vote_type == vote_type:
+            existing.delete()       # toggle off
+            user_vote = None
+        else:
+            existing.vote_type = vote_type
+            existing.save()
+            user_vote = vote_type
+    else:
+        Vote.objects.create(review=review, user=request.user, vote_type=vote_type)
+        user_vote = vote_type
 
-    if not created:
-        vote.vote_type = vote_type
-        vote.save()
+    likes    = Vote.objects.filter(review=review, vote_type='like').count()
+    dislikes = Vote.objects.filter(review=review, vote_type='dislike').count()
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'likes': likes, 'dislikes': dislikes, 'user_vote': user_vote})
 
     return redirect(request.META.get('HTTP_REFERER', 'browse'))
 
@@ -171,14 +210,20 @@ def profile_view(request):
     read_history = lists.filter(list_type='read').first()
     wishlist = lists.filter(list_type='wishlist').first()
 
+    user_reviews = Review.objects.filter(user=user)
+    total_upvotes   = Vote.objects.filter(review__in=user_reviews, vote_type='like').count()
+    total_downvotes = Vote.objects.filter(review__in=user_reviews, vote_type='dislike').count()
+
     return render(request, 'library/profile.html', {
         'user': user,
         'lists': lists,
-        'num_lists':num_lists,
+        'num_lists': num_lists,
         'read_history': read_history,
         'wishlist': wishlist,
         'books_read': read_history.books.count() if read_history else 0,
-        'review_count': Review.objects.filter(user=user).count(),
+        'review_count': user_reviews.count(),
+        'total_upvotes': total_upvotes,
+        'total_downvotes': total_downvotes,
     })
 @login_required
 def list_detail_view(request, list_id):
