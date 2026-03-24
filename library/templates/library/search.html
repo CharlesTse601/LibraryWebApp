@@ -1,81 +1,102 @@
 {% extends 'library/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/search.css' %}">
+{% endblock %}
 
 {% block title %}Search Results — LibraryWebApp{% endblock %}
 
 {% block content %}
-<h1>Search Results</h1>
+<section class="hero">
+    <h1>Search Results</h1>
+    <form class="hero-search" method="GET" action="{% url 'library:search' %}">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search by title, author, or ISBN...">
+        <button type="submit">🔍</button>
+    </form>
+</section>
 
-<form method="GET" action="{% url 'library:search' %}">
-    <input type="text" name="q" value="{{ query }}" placeholder="Search by title, author, or ISBN...">
-    <button type="submit">Search</button>
 
     <aside>
         <h3>Filters</h3>
+        <form method="GET" action="{% url 'library:search' %}">
+            <div id="filters">
+                <div id="published-left">
+                    <h4>Date Published</h4>
+                    <ul>
+                        <li>
+                            <input type="radio" name="date" value="" 
+                                {% if not request.GET.date %}checked{% endif %}>
+                            <label>All</label>
+                        </li>
+                        <li>
+                            <input type="radio" name="date" value="2020+"
+                                {% if request.GET.date == '2020+' %}checked{% endif %}>
+                            <label>2020+</label>
+                        </li>
+                        <li>
+                            <input type="radio" name="date" value="2010-2019" 
+                                {% if request.GET.date == '2010-2019' %}checked{% endif %}>
+                            <label>2010–2019</label>
+                        </li>
+                        <li>
+                            <input type="radio" name="date" value="before2010" 
+                                {% if request.GET.date == 'before2010' %}checked{% endif %}>
+                            <label>Before 2010</label>
+                        </li>
+                    </ul>
+                        <button class="app-btn" type="submit">Apply Filters</button>       
+                </div>
 
-        <h4>Date Published</h4>
-        <ul>
-            <li>
-                <input type="radio" name="date" value="" 
-                    {% if not request.GET.date %}checked{% endif %}>
-                <label>All</label>
-            </li>
-            <li>
-                <input type="radio" name="date" value="2020+"
-                    {% if request.GET.date == '2020+' %}checked{% endif %}>
-                <label>2020+</label>
-            </li>
-            <li>
-                <input type="radio" name="date" value="2010-2019" 
-                    {% if request.GET.date == '2010-2019' %}checked{% endif %}>
-                <label>2010–2019</label>
-            </li>
-            <li>
-                <input type="radio" name="date" value="before2010" 
-                    {% if request.GET.date == 'before2010' %}checked{% endif %}>
-                <label>Before 2010</label>
-            </li>
-        </ul>
-        <button type="submit">Apply Filters</button>
-
-        <h4>Category</h4>
-        {% for category in all_categories %}
-        <div>
-            <input type="checkbox" name="category" value="{{ category.category_name }}"
-                {% if category.category_name in request.GET.category %}checked{% endif %}>
-            <label>{{ category.category_name }}</label>
-        </div>
-        {% endfor %}
-        <button type="submit">Apply Filters</button>
+                <div id="category-right">
+                    <h4>Category</h4>
+                    {% for category in all_categories %}
+                    <div>
+                        <input type="checkbox" name="category" value="{{ category.category_name }}"
+                            {% if category.category_name in request.GET.category %}checked{% endif %}>
+                        <label>{{ category.category_name }}</label>
+                    </div>
+                    {% endfor %}
+                    <button class="app-btn "type="submit">Apply Filters</button>
+                </div>
+            </div>
+        </form>
 
     </aside>
-</form>
 
     <section>
         <p>Showing {{ result_count }} result(s) for "{{ query }}"</p>
 
         {% if books %}
+        <div class="book-grid">
             {% for book in books %}
-            <div>
-                {% if book.cover_image_url %}
-                    <img src="{{ book.cover_image_url }}" alt="{{ book.title }} cover">
-                {% else %}
-                    <div>No Cover</div>
-                {% endif %}
+            <div id="book">
+                <div id="book-cover">
+                    {% if book.cover_image_url %}
+                        <img class="cover" src="{{ book.cover_image_url }}" alt="{{ book.title }} cover">
+                    {% else %}
+                        <img class="cover" src="no_image_available.png">
+                    {% endif %}
+                </div>
 
-                <h3>{{ book.title }}</h3>
-                <p>{{ book.author }}</p>
-                <p>Published: {{ book.published_year }}</p>
+                <div id="book-details">
+                    <h3>{{ book.title }}</h3>
+                    <p>{{ book.author }}</p>
+                    <p>Published: {{ book.published_year }}</p>
 
-                {% if book.avg_rating %}
-                    <p>Rating: {{ book.avg_rating|floatformat:1 }} / 5</p>
-                {% else %}
-                    <p>No ratings yet</p>
-                {% endif %}
-                <a href="{% url 'library:book_detail' book.isbn %}">View</a>
-
-                <a href="{{ book.material_url }}" target="_blank">Read Online</a>
+                    {% if book.avg_rating %}
+                        <p>Rating: {{ book.avg_rating|floatformat:1 }} / 5</p>
+                    {% else %}
+                        <p>No ratings yet</p>
+                    {% endif %}
+                    <div class="book-actions">
+                        <a href="{% url 'library:book_detail' book.isbn %}" class="btn-view">View</a>
+                        <a href="{{ book.material_url }}" class="btn-view" target="_blank">Read Online</a>
+                    </div>
+                </div>
             </div>
             {% endfor %}
+        </div>
         {% else %}
             <p>No books found for "{{ query }}".</p>
         {% endif %}
