@@ -4,7 +4,8 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import login , logout , authenticate, update_session_auth_hash
-from django.db.models import Avg, Count,Q
+from django.db.models import Avg, Count, Q
+from django.core.paginator import Paginator
 from django.urls import reverse
 from .models import Book, Category, BookList, Review, Vote, User
 
@@ -206,24 +207,46 @@ def vote_review(request, review_id):
 def profile_view(request):
     user = request.user
     lists = BookList.objects.filter(user=user)
-    num_lists = lists.count()
+    custom_lists = lists.filter(list_type='custom')
+    num_lists = custom_lists.count()
     read_history = lists.filter(list_type='read').first()
     wishlist = lists.filter(list_type='wishlist').first()
 
+    sort = request.GET.get('sort', 'date')
+    q = request.GET.get('q', '')
+
+    if read_history:
+        books_qs = read_history.books.annotate(avg_rating=Avg('review__star_rating'))
+        if q:
+            books_qs = books_qs.filter(title__icontains=q)
+        if sort == 'title':
+            books_qs = books_qs.order_by('title')
+        elif sort == 'rating':
+            books_qs = books_qs.order_by('-avg_rating')
+        else:
+            books_qs = books_qs.order_by('-published_year')
+    else:
+        books_qs = Book.objects.none()
+
+    paginator = Paginator(books_qs, 5)
+    page_obj = paginator.get_page(request.GET.get('page', 1))
+
     user_reviews = Review.objects.filter(user=user)
-    total_upvotes   = Vote.objects.filter(review__in=user_reviews, vote_type='like').count()
-    total_downvotes = Vote.objects.filter(review__in=user_reviews, vote_type='dislike').count()
+    total_upvotes = Vote.objects.filter(review__in=user_reviews, vote_type='like').count()
 
     return render(request, 'library/profile.html', {
         'user': user,
-        'lists': lists,
+        'custom_lists': custom_lists,
         'num_lists': num_lists,
         'read_history': read_history,
         'wishlist': wishlist,
         'books_read': read_history.books.count() if read_history else 0,
+        'wishlist_count': wishlist.books.count() if wishlist else 0,
         'review_count': user_reviews.count(),
         'total_upvotes': total_upvotes,
-        'total_downvotes': total_downvotes,
+        'page_obj': page_obj,
+        'current_sort': sort,
+        'current_q': q,
     })
 @login_required
 def list_detail_view(request, list_id):
@@ -282,12 +305,17 @@ def remove_book_from_list(request, list_id, book_isbn):
 
     return redirect('library:list_detail', list_id=list_id)
 
+@login_required
+def remove_from_read_history(request, book_isbn):
+    book = get_object_or_404(Book, isbn=book_isbn)
+    read_list = BookList.objects.filter(user=request.user, list_type='read').first()
+    if read_list:
+        read_list.books.remove(book)
+    return redirect('library:profile')
 
 @login_required
 def mark_as_read(request, book_isbn):
     book = get_object_or_404(Book, isbn=book_isbn)
-
-    # Get or create the user's read history list
     read_list, created = BookList.objects.get_or_create(
         user=request.user,
         list_type='read',

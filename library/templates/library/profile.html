@@ -1,77 +1,154 @@
 {% extends 'library/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
 
 {% block title %}My Account — LibraryWebApp{% endblock %}
 
 {% block content %}
-<section>
-    <h1>{{ user.username }}</h1>
-    <p>Student &mdash; {{ user.email }}</p>
-    <a href="{% url 'library:edit_profile' %}">EDIT PROFILE</a>
-</section>
 
-<section>
-    <dl>
-        <dt> Books read </dt> <dd> {{ books_read }}</dd>
-        <dt>Wishlist</dt>   <dd>0</dd>
-        <dt>My Lists</dt>      <dd> {{ num_lists}}</dd>
-        <dt>Reviews</dt>    <dd>{{ review_count }}</dd>
-        <dt>Upvotes</dt>    <dd>{{ total_upvotes }}</dd>
-        <dt>Downvotes</dt>  <dd>{{ total_downvotes }}</dd>
-    </dl>
-</section>
-
-<div>
-    <nav>
-        <h2>My Lists</h2>
-
-        {% if lists %}
-        {% for list in lists %}
-            <a href="{% url 'library:list_detail' list.id %}">{{ list.list_name }}</a>
-            <form method="POST" action="{% url 'library:remove_list' list.id%}">
-            {% csrf_token %}
-            <button type="submit">Delete</button>
-            </form>
-        {% endfor %}
+<!-- ── Profile Header ── -->
+<div class="prof-header">
+    <div class="prof-avatar">
+        {% if user.avatar %}
+            <img src="{{ user.avatar.url }}" alt="avatar">
+        {% else %}
+            &#128100;
         {% endif %}
-        <a href="{% url 'library:my_books' %}">Read History</a>
-        <a href="{% url 'library:my_books' %}">Wishlist</a>
-         <form method="POST" action="{% url 'library:create_new_list' %}">
+    </div>
+    <div class="prof-info">
+        <h1>{{ user.username }}</h1>
+        <p>Student &nbsp;&nbsp; {{ user.email }}</p>
+    </div>
+    <a class="prof-edit-btn" href="{% url 'library:edit_profile' %}">EDIT PROFILE</a>
+</div>
+
+<!-- ── Stats Bar ── -->
+<div class="prof-stats">
+    <div class="prof-stat">
+        <span class="prof-stat__num">{{ books_read }}</span>
+        <span class="prof-stat__label">Books Read</span>
+    </div>
+    <div class="prof-stat">
+        <span class="prof-stat__num">{{ wishlist_count }}</span>
+        <span class="prof-stat__label">Wishlist</span>
+    </div>
+    <div class="prof-stat">
+        <span class="prof-stat__num">{{ num_lists }}</span>
+        <span class="prof-stat__label">Lists</span>
+    </div>
+    <div class="prof-stat">
+        <span class="prof-stat__num">{{ review_count }}</span>
+        <span class="prof-stat__label">Reviews</span>
+    </div>
+    <div class="prof-stat">
+        <span class="prof-stat__num">{{ total_upvotes }}</span>
+        <span class="prof-stat__label">Upvotes</span>
+    </div>
+</div>
+
+<!-- ── Body ── -->
+<div class="prof-body">
+
+    <!-- Sidebar -->
+    <nav class="prof-sidebar">
+        <h2 class="prof-sidebar__heading">MYLISTS</h2>
+
+        <a class="prof-sidebar__btn prof-sidebar__btn--active" href="{% url 'library:profile' %}">READ HISTORY</a>
+        <a class="prof-sidebar__btn prof-sidebar__btn--muted" href="{% url 'library:my_books' %}">WISHLIST</a>
+
+        {% for list in custom_lists %}
+        <div class="prof-sidebar__item">
+            <a class="prof-sidebar__btn prof-sidebar__btn--custom" href="{% url 'library:list_detail' list.id %}">{{ list.list_name }}</a>
+            <form method="POST" action="{% url 'library:remove_list' list.id %}">
                 {% csrf_token %}
-                <input type="text" name="list_name" placeholder="New list name...">
-                <button type="submit">+ New List</button>
+                <button class="prof-sidebar__delete" type="submit" title="Delete">&#10005;</button>
             </form>
+        </div>
+        {% endfor %}
+
+        <form class="prof-new-list" method="POST" action="{% url 'library:create_new_list' %}">
+            {% csrf_token %}
+            <input type="text" name="list_name" placeholder="List name...">
+            <button type="submit">+ ADD NEW LIST</button>
+        </form>
     </nav>
 
-    <section>
-        <h2>Read History</h2>
-        {% for book in read_history.books.all %}
-            <p>{{book.cover_image_url }}</p>
-            <p>{{ book.title }}</p>
-            <p>{{ book.author }}</p>
-            <p> {{ book.star_rating }} </p>
-            <a href="{% url 'library:book_detail' book.isbn %}">View</a>
+    <!-- Main Content -->
+    <section class="prof-main">
+
+        <!-- Top bar -->
+        <form class="prof-main__top" method="GET">
+            <h2 class="prof-main__title">READ HISTORY</h2>
+            <input class="prof-search" type="text" name="q" value="{{ current_q }}" placeholder="Search &lt;ListName&gt;">
+            <select class="prof-sort" name="sort" onchange="this.form.submit()">
+                <option value="date"   {% if current_sort == 'date'   %}selected{% endif %}>SORT ▾</option>
+                <option value="title"  {% if current_sort == 'title'  %}selected{% endif %}>Title</option>
+                <option value="rating" {% if current_sort == 'rating' %}selected{% endif %}>Rating</option>
+            </select>
+        </form>
+
+        <!-- Book rows -->
+        {% for book in page_obj %}
+        <div class="prof-book-row">
+            <div class="prof-book-row__thumb">
+                {% if book.cover_image_url %}
+                    <img src="{{ book.cover_image_url }}" alt="{{ book.title }}">
+                {% else %}
+                    <span class="prof-book-row__thumb-icon">&#128444;</span>
+                {% endif %}
+            </div>
+            <div class="prof-book-row__info">
+                <p class="prof-book-row__title">{{ book.title }}</p>
+                <p class="prof-book-row__meta">{{ book.author }} &nbsp; read on: {{ book.published_year }}</p>
+                <p class="prof-book-row__stars">
+                    {% with avg=book.avg_rating|default:0 %}
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= avg %}&#9733;{% else %}&#9734;{% endif %}
+                        {% endfor %}
+                    {% endwith %}
+                </p>
+            </div>
+            <div class="prof-book-row__actions">
+                <a class="prof-btn--view" href="{% url 'library:book_detail' book.isbn %}">VIEW</a>
+                <form method="POST" action="{% url 'library:remove_from_read_history' book.isbn %}">
+                    {% csrf_token %}
+                    <button class="prof-btn--remove" type="submit">REMOVE</button>
+                </form>
+            </div>
+        </div>
         {% empty %}
-            <p>No books read yet.</p>
+            <p class="prof-empty">No books in your read history yet.</p>
         {% endfor %}
 
-        <form method="GET">
-            <input type="text" name="q" placeholder="Search list...">
-        </form>
-        <select name="sort">
-            <option value="date">Date Read</option>
-            <option value="title">Title</option>
-            <option value="rating">Rating</option>
-        </select>
+        <!-- Pagination -->
+        {% if page_obj.paginator.num_pages > 1 %}
+        <nav class="prof-pagination">
+            {% if page_obj.has_previous %}
+                <a class="prof-page-btn prof-page-btn--nav" href="?page={{ page_obj.previous_page_number }}&sort={{ current_sort }}&q={{ current_q }}">&#8592; PREV</a>
+            {% else %}
+                <span class="prof-page-btn prof-page-btn--nav prof-page-btn--disabled">&#8592; PREV</span>
+            {% endif %}
 
-        <p>Book rows (thumbnail, title, author, date read, star rating, VIEW and REMOVE buttons)
-           will be rendered here from the database.</p>
+            {% for num in page_obj.paginator.page_range %}
+                {% if num == page_obj.number %}
+                    <span class="prof-page-btn prof-page-btn--active">{{ num }}</span>
+                {% else %}
+                    <a class="prof-page-btn" href="?page={{ num }}&sort={{ current_sort }}&q={{ current_q }}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
 
-        <nav>
-            <span>PREV</span>
-            <span>1</span>
-            <span>2</span>
-            <span>NEXT</span>
+            {% if page_obj.has_next %}
+                <a class="prof-page-btn prof-page-btn--nav" href="?page={{ page_obj.next_page_number }}&sort={{ current_sort }}&q={{ current_q }}">NEXT &#8594;</a>
+            {% else %}
+                <span class="prof-page-btn prof-page-btn--nav prof-page-btn--disabled">NEXT &#8594;</span>
+            {% endif %}
         </nav>
+        {% endif %}
+
     </section>
 </div>
+
 {% endblock %}
