@@ -1,16 +1,23 @@
 {% extends 'library/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/categories.css' %}">
+{% endblock %}
 
 {% block title %}Categories — LibraryWebApp{% endblock %}
 
 {% block content %}
-<p>Browse &rsaquo; <strong>Categories</strong></p>
+<p class="default"><a href="{% url 'library:browse' %}">Browse</a> &rsaquo; <strong>Categories</strong></p>
 
-<h1>Categories</h1>
+<section class="hero">
+    <h1>Categories</h1>
 
-<form method="GET">
-    <input type="text" name="q" placeholder="Search categories...">
-    <button type="submit">Search</button>
-</form>
+    <form class="hero-search" method="GET">
+        <input type="text" name="q" placeholder="Search categories...">
+        <button type="submit">🔍</button>
+    </form>
+</section>
 
 <nav>
     <a href="?filter=all">All</a>
@@ -22,21 +29,22 @@
 </nav>
 
 {% if featured %}
-<section>
+<section class="featured-section">
     <h2>Featured Category</h2>
+    <a href="{% url 'library:category_detail' featured.category_name %}" class="sec-grid">
     <p>{{ featured.category_name }} — {{ featured.book_count }} books</p>
-    <a href="{% url 'library:category_detail' featured.category_name %}">Browse</a>
+    </a>
 </section>
 {% endif %}
 
-<section>
+<section class="categories-section">
     <h2>All Categories</h2>
-    {% for category in categories %}
-    <div>
-        <h3>{{ category.category_name }}</h3>
-        <p>{{ category.book_count }} books</p>
-        <a href="{% url 'library:category_detail' category.category_name %}">Browse</a>
+    <div class="categories-grid">
+        {% for category in categories %}
+            <a href="{% url 'library:category_detail' category.category_name %}" class="cat-tile">
+            <span>📚{{ category.category_name }}</span> <p>{{ category.book_count }} books</p>
+            </a>
+        {% endfor %}
     </div>
-    {% endfor %}
 </section>
 {% endblock %}

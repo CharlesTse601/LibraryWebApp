@@ -1,0 +1,146 @@
+.hero {
+  background: #111;
+  color: white;
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 1.5rem;
+  color: #aaa;
+  margin-bottom: 1.5rem;
+}
+
+.hero-search {
+  display: flex;
+  max-width: 500px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.hero-search input {
+  flex: 1;
+  padding: 0.85rem 1.2rem;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  color: #111;
+}
+
+.hero-search button {
+  background: white;
+  border: none;
+  padding: 0 1.2rem;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+#filters {
+  display: flex;
+  min-height: 70vh;
+}
+
+#published-left {
+  width: 45%;
+  background: #ccc;
+  color: #111;
+  border: solid;
+  border-radius: 4px;
+  border-right-color: #333;
+  padding: 2rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.app-btn {
+  padding: 0.75rem 2rem;
+  border: 2px solid #111;
+  background: white;
+  color: #111;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+  max-width: 175px;
+}
+
+#category-right {
+  width: 55%;
+  background: #ccc;
+  color: #111;
+  border: solid;
+  border-radius: 4px;
+  border-left-color: #333;
+  padding: 2rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#book {
+  display: flex;
+  min-height: 70vh;
+}
+
+#book-cover {
+  width: 45%;
+  background: #666;
+  color: white;
+  border: solid;
+  border-radius: 4px;
+  border-right-color: #333;
+  padding: 2rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-height: 250px;
+  max-width: 200px;
+}
+
+#book-details {
+  width: 55%;
+  background: #666;
+  color: white;
+  border: solid;
+  border-radius: 4px;
+  border-left-color: #333;
+  padding: 2rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-height: 250px;
+  max-width: 200px;
+}
+
+.cover {
+  width: 180px;
+  height: 285px;
+  background: #333;
+  flex-shrink: 0;
+}
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  max-width:1200px;
+  margin: 0 auto 1rem;
+}
+
+.book-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.btn-view {
+  background: #333;
+  color: white;
+  border: none;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  text-decoration: none;
+}
