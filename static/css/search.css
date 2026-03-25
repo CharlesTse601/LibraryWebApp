@@ -1,146 +1,265 @@
-.hero {
-  background: #111;
-  color: white;
-  padding: 3rem 2rem;
-  text-align: center;
+.search-page {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
 }
 
-.hero h1 {
-  font-size: 1.5rem;
-  color: #aaa;
+/* ── Search bar row ── */
+.search-top {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
   margin-bottom: 1.5rem;
 }
 
-.hero-search {
+.search-bar-form {
   display: flex;
-  max-width: 500px;
-  margin: 0 auto;
-  background: white;
-  border-radius: 4px;
+  flex: 1;
+  max-width: 560px;
+  border: 1.5px solid #bbb;
   overflow: hidden;
 }
 
-.hero-search input {
+.search-bar-form input[type="text"] {
   flex: 1;
-  padding: 0.85rem 1.2rem;
+  padding: 0.75rem 1rem;
   border: none;
   outline: none;
   font-size: 0.95rem;
-  color: #111;
+  color: #333;
 }
 
-.hero-search button {
-  background: white;
+.search-bar-form button {
+  background: #111;
+  color: white;
   border: none;
   padding: 0 1.2rem;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 
-#filters {
-  display: flex;
-  min-height: 70vh;
-}
-
-#published-left {
-  width: 45%;
-  background: #ccc;
+.result-count {
+  font-size: 1.3rem;
+  font-weight: 600;
   color: #111;
-  border: solid;
-  border-radius: 4px;
-  border-right-color: #333;
-  padding: 2rem 3rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
 
-.app-btn {
-  padding: 0.75rem 2rem;
-  border: 2px solid #111;
+/* ── Body layout ── */
+.search-body {
+  display: flex;
+  gap: 0;
+  align-items: flex-start;
+  border: 1.5px solid #ccc;
+}
+
+/* ── Filters sidebar ── */
+.filters-sidebar {
+  width: 210px;
+  flex-shrink: 0;
+  border-right: 1.5px solid #ccc;
+  align-self: stretch;
+}
+
+.filter-groups.hidden {
+  display: none;
+}
+
+.filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 1rem;
+  border-bottom: 1.5px solid #ccc;
+}
+
+.filters-header span {
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+}
+
+.hide-btn {
+  background: none;
+  border: 1.5px solid #111;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+}
+
+.filter-group {
+  border-bottom: 1.5px solid #ccc;
+  padding: 0.75rem 0.75rem 0.9rem;
+}
+
+.filter-group-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #888;
+  letter-spacing: 0.07em;
+  margin-bottom: 0.5rem;
+}
+
+.filter-opt {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  margin-bottom: 0.3rem;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border: 1.5px solid #ccc;
   background: white;
   color: #111;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 0.9rem;
-  max-width: 175px;
+  user-select: none;
 }
 
-#category-right {
-  width: 55%;
-  background: #ccc;
-  color: #111;
-  border: solid;
-  border-radius: 4px;
-  border-left-color: #333;
-  padding: 2rem 3rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+.filter-opt input[type="radio"] {
+  display: none;
 }
 
-#book {
-  display: flex;
-  min-height: 70vh;
-}
-
-#book-cover {
-  width: 45%;
-  background: #666;
+.filter-opt.active {
+  background: #111;
   color: white;
-  border: solid;
-  border-radius: 4px;
-  border-right-color: #333;
-  padding: 2rem 3rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  max-height: 250px;
-  max-width: 200px;
+  border-color: #111;
 }
 
-#book-details {
-  width: 55%;
-  background: #666;
-  color: white;
-  border: solid;
-  border-radius: 4px;
-  border-left-color: #333;
-  padding: 2rem 3rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  max-height: 250px;
-  max-width: 200px;
+/* ── Results ── */
+.results-section {
+  flex: 1;
+  padding: 1rem 1.25rem;
+  min-width: 0;
 }
 
-.cover {
-  width: 180px;
-  height: 285px;
-  background: #333;
+.results-summary {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+/* ── Book card ── */
+.search-book-card {
+  display: flex;
+  gap: 1rem;
+  border: 1.5px solid #ccc;
+  padding: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.search-book-cover {
+  width: 75px;
   flex-shrink: 0;
 }
 
-.book-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  max-width:1200px;
-  margin: 0 auto 1rem;
+.search-book-cover img {
+  width: 75px;
+  height: 105px;
+  object-fit: cover;
+  display: block;
+  background: #ccc;
 }
 
-.book-actions {
+.cover-placeholder {
+  width: 75px;
+  height: 105px;
+  background: #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.search-book-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.search-book-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.search-book-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 0 0.3rem;
+  text-transform: uppercase;
+}
+
+.search-book-meta {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0;
+}
+
+.search-book-rating {
+  font-size: 0.9rem;
+  color: #111;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.search-book-actions {
   display: flex;
   gap: 0.5rem;
-  margin-top: 0.5rem;
+  margin-top: 0.7rem;
+  flex-wrap: wrap;
 }
 
-.btn-view {
-  background: #333;
-  color: white;
-  border: none;
-  padding: 0.4rem 1rem;
-  cursor: pointer;
-  font-size: 0.8rem;
+.sbtn {
+  padding: 0.35rem 0.9rem;
+  font-size: 0.78rem;
+  font-weight: 700;
   text-decoration: none;
+  border: 1.5px solid #111;
+  letter-spacing: 0.03em;
+}
+
+.sbtn-dark {
+  background: #111;
+  color: white;
+}
+
+.sbtn-outline {
+  background: white;
+  color: #111;
+}
+
+.no-results {
+  color: #666;
+  font-size: 0.9rem;
+  padding: 1rem 0;
+}
+
+/* ── Pagination ── */
+.s-pagination {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 1.5rem;
+  align-items: center;
+}
+
+.s-page-btn {
+  padding: 0.45rem 0.9rem;
+  border: 1.5px solid #111;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: #111;
+  background: white;
+  letter-spacing: 0.03em;
+}
+
+.s-page-btn.s-active {
+  background: #111;
+  color: white;
 }

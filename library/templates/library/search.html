@@ -8,106 +8,112 @@
 {% block title %}Search Results — LibraryWebApp{% endblock %}
 
 {% block content %}
-<section class="hero">
-    <h1>Search Results</h1>
-    <form class="hero-search" method="GET" action="{% url 'library:search' %}">
-        <input type="text" name="q" value="{{ query }}" placeholder="Search by title, author, or ISBN...">
-        <button type="submit">🔍</button>
-    </form>
-</section>
+<div class="search-page">
 
-
-    <aside>
-        <h3>Filters</h3>
-        <form method="GET" action="{% url 'library:search' %}">
-            <div id="filters">
-                <div id="published-left">
-                    <h4>Date Published</h4>
-                    <ul>
-                        <li>
-                            <input type="radio" name="date" value="" 
-                                {% if not request.GET.date %}checked{% endif %}>
-                            <label>All</label>
-                        </li>
-                        <li>
-                            <input type="radio" name="date" value="2020+"
-                                {% if request.GET.date == '2020+' %}checked{% endif %}>
-                            <label>2020+</label>
-                        </li>
-                        <li>
-                            <input type="radio" name="date" value="2010-2019" 
-                                {% if request.GET.date == '2010-2019' %}checked{% endif %}>
-                            <label>2010–2019</label>
-                        </li>
-                        <li>
-                            <input type="radio" name="date" value="before2010" 
-                                {% if request.GET.date == 'before2010' %}checked{% endif %}>
-                            <label>Before 2010</label>
-                        </li>
-                    </ul>
-                        <button class="app-btn" type="submit">Apply Filters</button>       
-                </div>
-
-                <div id="category-right">
-                    <h4>Category</h4>
-                    {% for category in all_categories %}
-                    <div>
-                        <input type="checkbox" name="category" value="{{ category.category_name }}"
-                            {% if category.category_name in request.GET.category %}checked{% endif %}>
-                        <label>{{ category.category_name }}</label>
-                    </div>
-                    {% endfor %}
-                    <button class="app-btn "type="submit">Apply Filters</button>
-                </div>
-            </div>
+    <!-- Search bar + result count -->
+    <div class="search-top">
+        <form class="search-bar-form" method="GET" action="{% url 'library:search' %}">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search by title, author, or ISBN...">
+            {% if request.GET.date %}<input type="hidden" name="date" value="{{ request.GET.date }}">{% endif %}
+            {% if request.GET.category %}<input type="hidden" name="category" value="{{ request.GET.category }}">{% endif %}
+            <button type="submit">&#128269;</button>
         </form>
+        <span class="result-count">{{ result_count }} Results</span>
+    </div>
 
-    </aside>
+    <div class="search-body">
 
-    <section>
-        <p>Showing {{ result_count }} result(s) for "{{ query }}"</p>
+        <!-- Filters sidebar -->
+        <aside class="filters-sidebar">
+            <div class="filters-header">
+                <span>FILTERS</span>
+                <button class="hide-btn" onclick="document.querySelector('.filter-groups').classList.toggle('hidden')">HIDE</button>
+            </div>
+            <div class="filter-groups">
+                <form method="GET" action="{% url 'library:search' %}">
+                    <input type="hidden" name="q" value="{{ query }}">
 
-        {% if books %}
-        <div class="book-grid">
-            {% for book in books %}
-            <div id="book">
-                <div id="book-cover">
-                    {% if book.cover_image_url %}
-                        <img class="cover" src="{{ book.cover_image_url }}" alt="{{ book.title }} cover">
-                    {% else %}
-                        <img class="cover" src="no_image_available.png">
-                    {% endif %}
-                </div>
+                    <div class="filter-group">
+                        <div class="filter-group-title">DATE PUBLISHED</div>
+                        <label class="filter-opt {% if not request.GET.date %}active{% endif %}">
+                            <input type="radio" name="date" value="" {% if not request.GET.date %}checked{% endif %} onchange="this.form.submit()"> ALL
+                        </label>
+                        <label class="filter-opt {% if request.GET.date == '2020+' %}active{% endif %}">
+                            <input type="radio" name="date" value="2020+" {% if request.GET.date == '2020+' %}checked{% endif %} onchange="this.form.submit()"> 2020 -
+                        </label>
+                        <label class="filter-opt {% if request.GET.date == '2010-2019' %}active{% endif %}">
+                            <input type="radio" name="date" value="2010-2019" {% if request.GET.date == '2010-2019' %}checked{% endif %} onchange="this.form.submit()"> 2010-2019
+                        </label>
+                        <label class="filter-opt {% if request.GET.date == 'before2010' %}active{% endif %}">
+                            <input type="radio" name="date" value="before2010" {% if request.GET.date == 'before2010' %}checked{% endif %} onchange="this.form.submit()"> BEFORE 2010
+                        </label>
+                    </div>
 
-                <div id="book-details">
-                    <h3>{{ book.title }}</h3>
-                    <p>{{ book.author }}</p>
-                    <p>Published: {{ book.published_year }}</p>
+                    <div class="filter-group">
+                        <div class="filter-group-title">CATEGORY</div>
+                        <label class="filter-opt {% if not request.GET.category %}active{% endif %}">
+                            <input type="radio" name="category" value="" {% if not request.GET.category %}checked{% endif %} onchange="this.form.submit()"> ALL
+                        </label>
+                        {% for category in all_categories %}
+                        <label class="filter-opt {% if request.GET.category == category.category_name %}active{% endif %}">
+                            <input type="radio" name="category" value="{{ category.category_name }}" {% if request.GET.category == category.category_name %}checked{% endif %} onchange="this.form.submit()"> {{ category.category_name }}
+                        </label>
+                        {% endfor %}
+                    </div>
 
-                    {% if book.avg_rating %}
-                        <p>Rating: {{ book.avg_rating|floatformat:1 }} / 5</p>
-                    {% else %}
-                        <p>No ratings yet</p>
-                    {% endif %}
-                    <div class="book-actions">
-                        <a href="{% url 'library:book_detail' book.isbn %}" class="btn-view">View</a>
-                        <a href="{{ book.material_url }}" class="btn-view" target="_blank">Read Online</a>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Results -->
+        <section class="results-section">
+            <p class="results-summary">Showing {{ result_count }} result(s) for "{{ query }}"</p>
+
+            {% if books %}
+                {% for book in books %}
+                <div class="search-book-card">
+                    <div class="search-book-cover">
+                        {% if book.cover_image_url %}
+                            <img src="{{ book.cover_image_url }}" alt="{{ book.title }} cover">
+                        {% else %}
+                            <div class="cover-placeholder">Cover</div>
+                        {% endif %}
+                    </div>
+                    <div class="search-book-info">
+                        <div class="search-book-top">
+                            <div>
+                                <h3 class="search-book-title">{{ book.title }}</h3>
+                                <p class="search-book-meta">{{ book.author }} &mdash; {{ book.category }} &mdash; {{ book.published_year }}</p>
+                            </div>
+                            <div class="search-book-rating">
+                                {% if book.avg_rating %}&#9733; {{ book.avg_rating|floatformat:1 }}{% else %}&mdash;{% endif %}
+                            </div>
+                        </div>
+                        <div class="search-book-actions">
+                            <a href="{% url 'library:book_detail' book.isbn %}" class="sbtn sbtn-dark">VIEW</a>
+                            {% if user.is_authenticated %}
+                            <a href="{% url 'library:book_detail' book.isbn %}" class="sbtn sbtn-outline">+ ADD</a>
+                            {% endif %}
+                            {% if book.material_url %}
+                            <a href="{{ book.material_url }}" class="sbtn sbtn-outline" target="_blank">READ ONLINE</a>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% else %}
-            <p>No books found for "{{ query }}".</p>
-        {% endif %}
+                {% endfor %}
+            {% else %}
+                <p class="no-results">No books found for "{{ query }}".</p>
+            {% endif %}
 
-        <nav>
-            <span>PREV</span>
-            <span>1</span>
-            <span>2</span>
-            <span>3</span>
-            <span>NEXT</span>
-        </nav>
-    </section>
+            <nav class="s-pagination">
+                <a href="#" class="s-page-btn">&#8592; PREV</a>
+                <a href="#" class="s-page-btn s-active">1</a>
+                <a href="#" class="s-page-btn">2</a>
+                <a href="#" class="s-page-btn">3</a>
+                <a href="#" class="s-page-btn">NEXT &#8594;</a>
+            </nav>
+        </section>
+
+    </div>
 </div>
 {% endblock %}
