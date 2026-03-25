@@ -56,12 +56,16 @@
     <nav class="prof-sidebar">
         <h2 class="prof-sidebar__heading">MYLISTS</h2>
 
-        <a class="prof-sidebar__btn prof-sidebar__btn--active" href="{% url 'library:profile' %}">READ HISTORY</a>
-        <a class="prof-sidebar__btn prof-sidebar__btn--muted" href="{% url 'library:my_books' %}">WISHLIST</a>
+        <a class="prof-sidebar__btn{% if active_list_param == 'read' %} prof-sidebar__btn--active{% endif %}"
+           href="{% url 'library:profile' %}?list=read">READ HISTORY</a>
+
+        <a class="prof-sidebar__btn{% if active_list_param == 'wishlist' %} prof-sidebar__btn--active{% endif %}"
+           href="{% url 'library:profile' %}?list=wishlist">WISHLIST</a>
 
         {% for list in custom_lists %}
         <div class="prof-sidebar__item">
-            <a class="prof-sidebar__btn prof-sidebar__btn--custom" href="{% url 'library:list_detail' list.id %}">{{ list.list_name }}</a>
+            <a class="prof-sidebar__btn{% if active_list_param == list.id|stringformat:'i' %} prof-sidebar__btn--active{% endif %}"
+               href="{% url 'library:profile' %}?list={{ list.id }}">{{ list.list_name }}</a>
             <form method="POST" action="{% url 'library:remove_list' list.id %}">
                 {% csrf_token %}
                 <button class="prof-sidebar__delete" type="submit" title="Delete">&#10005;</button>
@@ -81,8 +85,9 @@
 
         <!-- Top bar -->
         <form class="prof-main__top" method="GET">
-            <h2 class="prof-main__title">READ HISTORY</h2>
-            <input class="prof-search" type="text" name="q" value="{{ current_q }}" placeholder="Search &lt;ListName&gt;">
+            <input type="hidden" name="list" value="{{ active_list_param }}">
+            <h2 class="prof-main__title">{{ active_list_name }}</h2>
+            <input class="prof-search" type="text" name="q" value="{{ current_q }}" placeholder="Search...">
             <select class="prof-sort" name="sort" onchange="this.form.submit()">
                 <option value="date"   {% if current_sort == 'date'   %}selected{% endif %}>SORT ▾</option>
                 <option value="title"  {% if current_sort == 'title'  %}selected{% endif %}>Title</option>
@@ -102,7 +107,7 @@
             </div>
             <div class="prof-book-row__info">
                 <p class="prof-book-row__title">{{ book.title }}</p>
-                <p class="prof-book-row__meta">{{ book.author }} &nbsp; read on: {{ book.published_year }}</p>
+                <p class="prof-book-row__meta">{{ book.author }} &nbsp; {{ book.published_year }}</p>
                 <p class="prof-book-row__stars">
                     {% with avg=book.avg_rating|default:0 %}
                         {% for i in "12345" %}
@@ -113,21 +118,28 @@
             </div>
             <div class="prof-book-row__actions">
                 <a class="prof-btn--view" href="{% url 'library:book_detail' book.isbn %}">VIEW</a>
+                {% if active_list.list_type == 'read' %}
                 <form method="POST" action="{% url 'library:remove_from_read_history' book.isbn %}">
                     {% csrf_token %}
                     <button class="prof-btn--remove" type="submit">REMOVE</button>
                 </form>
+                {% elif active_list %}
+                <form method="POST" action="{% url 'library:remove_book_from_list' active_list.id book.isbn %}">
+                    {% csrf_token %}
+                    <button class="prof-btn--remove" type="submit">REMOVE</button>
+                </form>
+                {% endif %}
             </div>
         </div>
         {% empty %}
-            <p class="prof-empty">No books in your read history yet.</p>
+            <p class="prof-empty">No books in this list yet.</p>
         {% endfor %}
 
         <!-- Pagination -->
         {% if page_obj.paginator.num_pages > 1 %}
         <nav class="prof-pagination">
             {% if page_obj.has_previous %}
-                <a class="prof-page-btn prof-page-btn--nav" href="?page={{ page_obj.previous_page_number }}&sort={{ current_sort }}&q={{ current_q }}">&#8592; PREV</a>
+                <a class="prof-page-btn prof-page-btn--nav" href="?page={{ page_obj.previous_page_number }}&sort={{ current_sort }}&q={{ current_q }}&list={{ active_list_param }}">&#8592; PREV</a>
             {% else %}
                 <span class="prof-page-btn prof-page-btn--nav prof-page-btn--disabled">&#8592; PREV</span>
             {% endif %}
@@ -136,12 +148,12 @@
                 {% if num == page_obj.number %}
                     <span class="prof-page-btn prof-page-btn--active">{{ num }}</span>
                 {% else %}
-                    <a class="prof-page-btn" href="?page={{ num }}&sort={{ current_sort }}&q={{ current_q }}">{{ num }}</a>
+                    <a class="prof-page-btn" href="?page={{ num }}&sort={{ current_sort }}&q={{ current_q }}&list={{ active_list_param }}">{{ num }}</a>
                 {% endif %}
             {% endfor %}
 
             {% if page_obj.has_next %}
-                <a class="prof-page-btn prof-page-btn--nav" href="?page={{ page_obj.next_page_number }}&sort={{ current_sort }}&q={{ current_q }}">NEXT &#8594;</a>
+                <a class="prof-page-btn prof-page-btn--nav" href="?page={{ page_obj.next_page_number }}&sort={{ current_sort }}&q={{ current_q }}&list={{ active_list_param }}">NEXT &#8594;</a>
             {% else %}
                 <span class="prof-page-btn prof-page-btn--nav prof-page-btn--disabled">NEXT &#8594;</span>
             {% endif %}

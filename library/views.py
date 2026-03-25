@@ -212,11 +212,35 @@ def profile_view(request):
     read_history = lists.filter(list_type='read').first()
     wishlist = lists.filter(list_type='wishlist').first()
 
+    # Determine which list to display
+    active_list_param = request.GET.get('list', 'read')
+
+    if active_list_param == 'read':
+        active_list = read_history
+        active_list_name = 'READ HISTORY'
+    elif active_list_param == 'wishlist':
+        active_list = wishlist
+        active_list_name = 'WISHLIST'
+    else:
+        try:
+            list_id = int(active_list_param)
+            active_list = BookList.objects.filter(id=list_id, user=user).first()
+            if not active_list:
+                active_list = read_history
+                active_list_name = 'READ HISTORY'
+                active_list_param = 'read'
+            else:
+                active_list_name = active_list.list_name.upper()
+        except ValueError:
+            active_list = read_history
+            active_list_name = 'READ HISTORY'
+            active_list_param = 'read'
+
     sort = request.GET.get('sort', 'date')
     q = request.GET.get('q', '')
 
-    if read_history:
-        books_qs = read_history.books.annotate(avg_rating=Avg('review__star_rating'))
+    if active_list:
+        books_qs = active_list.books.annotate(avg_rating=Avg('review__star_rating'))
         if q:
             books_qs = books_qs.filter(title__icontains=q)
         if sort == 'title':
@@ -247,6 +271,9 @@ def profile_view(request):
         'page_obj': page_obj,
         'current_sort': sort,
         'current_q': q,
+        'active_list_param': active_list_param,
+        'active_list_name': active_list_name,
+        'active_list': active_list,
     })
 @login_required
 def list_detail_view(request, list_id):
@@ -303,7 +330,7 @@ def remove_book_from_list(request, list_id, book_isbn):
     book = get_object_or_404(Book, isbn=book_isbn)
     book_list.books.remove(book)
 
-    return redirect('library:list_detail', list_id=list_id)
+    return redirect(request.META.get('HTTP_REFERER') or reverse('library:profile'))
 
 @login_required
 def remove_from_read_history(request, book_isbn):
