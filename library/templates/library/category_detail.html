@@ -1,34 +1,54 @@
 {% extends 'library/base.html' %}
+{% load static %}
 
-{% block title %}Category — LibraryWebApp{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/category_detail.css' %}">
+{% endblock %}
+
+{% block title %}{{ category.category_name }} — LibraryWebApp{% endblock %}
 
 {% block content %}
-<p>
+<p class="breadcrumb">
     <a href="{% url 'library:browse' %}">Browse</a> &rsaquo;
     <a href="{% url 'library:categories' %}">Categories</a> &rsaquo;
     <strong>{{ category.category_name }}</strong>
 </p>
 
-<h1>{{ category.category_name }}</h1>
+<section class="category-hero">
+    <h1>{{ category.category_name }}</h1>
+    <p class="book-count">{{ books|length }} book{{ books|length|pluralize }} in this category</p>
+</section>
 
-<section>
-    {% for book in books %}
-    <div>
-        {% if book.cover_image_url %}
-            <img src="{{ book.cover_image_url }}" alt="{{ book.title }}">
-        {% endif %}
-        <h3>{{ book.title }}</h3>
-        <p>{{ book.author }}</p>
-        <p>{{ book.published_year }}</p>
-        {% if book.avg_rating %}
-            <p>{{ book.avg_rating|floatformat:1 }} / 5</p>
-        {% else %}
-            <p>No ratings yet</p>
-        {% endif %}
-        <a href="{% url 'library:book_detail' book.isbn %}">View</a>
+<section class="books-section">
+    <h2>All Books</h2>
+    <div class="books-grid">
+        {% for book in books %}
+        <div class="book-card">
+            <span class="book-card__rank">{{ forloop.counter }}</span>
+            {% if book.cover_image_url %}
+                <img class="book-card__cover" src="{{ book.cover_image_url }}" alt="{{ book.title }}">
+            {% else %}
+                <div class="book-card__cover--placeholder">📖</div>
+            {% endif %}
+            <div class="book-card__info">
+                <div class="book-card__title">{{ book.title }}</div>
+                <div class="book-card__author">{{ book.author }}</div>
+                <div class="book-card__year">{{ book.published_year }}</div>
+                <div class="book-card__rating">
+                    {% if book.avg_rating %}
+                        ★ {{ book.avg_rating|floatformat:1 }} / 5
+                    {% else %}
+                        No ratings yet
+                    {% endif %}
+                </div>
+                <div class="book-card__actions">
+                    <a href="{% url 'library:book_detail' book.isbn %}" class="btn-view">View</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            <p class="empty-state">No books in this category yet.</p>
+        {% endfor %}
     </div>
-    {% empty %}
-        <p>No books in this category yet.</p>
-    {% endfor %}
 </section>
 {% endblock %}
