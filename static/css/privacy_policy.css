@@ -1,0 +1,11 @@
+.privacy-section h2 {
+  font-size: 1.5rem;
+  color: #111;
+  margin-bottom: 1.5rem;
+}
+
+.privacy-divider {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 1.25rem 0;
+}
