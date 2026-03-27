@@ -29,7 +29,7 @@ Then open `http://127.0.0.1:8000/`
 - [x] Implement my_books — at /login/myaccount/mybooks/
 - [x] Populate database via Open Library API
 - [ ] Implement contacts — handle form POST
-- [ ] Add Bootstrap to all templates
+- [ ] Add css to all templates
 - [ ] Style navbar and footer
 - [ ] Style browse page — hero banner, category tiles, hot books grid
 - [ ] Style search page — filter panel and result cards
