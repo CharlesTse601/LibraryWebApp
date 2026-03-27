@@ -11,7 +11,7 @@ python population_script.py
 python api_population.py
 python manage.py runserver
 ```
-Then open `http://127.0.0.1:8000/`
+Then open `http://127.0.0.1:8000/` or https://team3ewad.pythonanywhere.com
 
 ## Completed Features
 
@@ -77,4 +77,4 @@ Then open `http://127.0.0.1:8000/`
 ## Remaining / Optional
 - [ ] Make layout fully responsive (mobile/tablet/desktop)
 - [ ] Add pagination where needed
-- [ ] Deploy on PythonAnywhere
+- [x] Deploy on PythonAnywhere

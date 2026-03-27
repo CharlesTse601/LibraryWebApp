@@ -8,7 +8,7 @@ SECRET_KEY = 'django-insecure-replace-this-with-a-real-secret-key-in-production'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1','team3ewad.pythonanywhere.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
