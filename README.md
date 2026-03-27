@@ -21,7 +21,7 @@ Then open `http://127.0.0.1:8000/` or https://team3ewad.pythonanywhere.com
 - [x] Register models in admin.py
 
 ### Views
-> ChatGPT has been used for privacy_policy.html and terms_of_service.html to five ideas for the text to put inside there.
+> ChatGPT has been used for privacy_policy.html and terms_of_service.html to give ideas for the text to put inside there.
 - [x] Implement browse view
 - [x] Implement search view (with title, author, ISBN, date range, and category filters)
 - [x] Implement categories view (with featured category logic)
