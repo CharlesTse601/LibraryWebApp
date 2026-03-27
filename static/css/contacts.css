@@ -1,0 +1,95 @@
+.contacts-wrap {
+  max-width: 480px;
+  margin: 2rem auto;
+  border: 1px solid #ccc;
+  padding: 2rem;
+  background: #fff;
+}
+
+.contacts-wrap h1 {
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 1.5rem;
+  padding-bottom: 0.6rem;
+}
+
+.contacts-wrap p {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 1.5rem;
+  border-bottom: 2px solid #111;
+  padding-bottom: 0.6rem;
+}
+
+.contacts-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.contacts-field label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #555;
+  margin-bottom: 0.3rem;
+}
+
+.contacts-field input {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  background: #f9f9f9;
+  color: #111;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.contacts-field input:focus {
+  outline: none;
+  border-color: #111;
+  background: #fff;
+}
+
+.contacts-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  align-items: center;
+}
+
+.contacts-send {
+  padding: 0.7rem 1.75rem;
+  background: #111;
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.contacts-send:hover {
+  background: #333;
+}
+
+.contacts-divider {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 1.25rem 0;
+}
+
+.contacts-section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #888;
+  margin-bottom: 0.75rem;
+}

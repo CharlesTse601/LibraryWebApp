@@ -1,4 +1,9 @@
 {% extends 'library/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/faq.css' %}">
+{% endblock %}
 
 {% block title %}FAQ — LibraryWebApp{% endblock %}
 
@@ -9,21 +14,33 @@
 
 <section>
     <h2>What is LibraryWebApp?</h2>
-    <p>Answer will go here.</p>
+    <p>LibraryWebApp is a website which allows you to find any book in just one place, in here.</p>
+
+    <hr class="faq-divider">
 
     <h2>How do I create an account?</h2>
-    <p>Answer will go here.</p>
+    <p>Click register at the top right of the screen, enter your username, email, password, choose a profile picture(If you want to) and choose your role..</p>
+
+    <hr class="faq-divider">
 
     <h2>How do I search for a book?</h2>
-    <p>Answer will go here.</p>
+    <p>Click search at the top of the screen, type in the book name/keywords in the search bar and click the search icon.</p>
+
+    <hr class="faq-divider">
 
     <h2>What is the Wishlist?</h2>
-    <p>Answer will go here.</p>
+    <p>A whistlist allows you to put a book in "My Lists" which allows you to find it later when you want to read it.</p>
+
+    <hr class="faq-divider">
 
     <h2>How do I mark a book as read?</h2>
-    <p>Answer will go here.</p>
+    <p>When you click on a book(view), you can cllick on "mark as read" to mark the book as read.</p>
+
+    <hr class="faq-divider">
 
     <h2>How do I leave a review?</h2>
-    <p>Answer will go here.</p>
+    <p>In the book view, click on "+Add a review" then you can rate it and comment on the book then submit it.</p>
+
+    <hr class="faq-divider">
 </section>
 {% endblock %}
