@@ -23,8 +23,7 @@
         <img src="{% static 'images/User/default_profile_picture.jpg' %}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
     {% endif %}
     <a href="{% url 'library:profile' %}">{{ user.username }}</a>
-    <a href="{% url 'library:my_books' %}">My Lists</a>
-    <a href="{% url 'library:logout' %}">Logout</a>
+<a href="{% url 'library:logout' %}">Logout</a>
     {% else %}
         <a href="{% url 'library:login' %}">Login</a>
         <a href="{% url 'library:login' %}?tab=register">Register</a>
